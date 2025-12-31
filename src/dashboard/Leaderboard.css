@@ -1,0 +1,89 @@
+.leaderboard-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.leaderboard-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.leaderboard-header h1 {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+}
+
+.leader-table-card {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.leader-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leader-table th {
+    background: #f8f9fa;
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: #666;
+}
+
+.leader-table td {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.rank-col {
+    font-weight: bold;
+    color: #888;
+    width: 80px;
+    text-align: center;
+}
+
+.points-col {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.donated-col {
+    color: #e91e63;
+}
+
+.rank-1 {
+    background: linear-gradient(90deg, #fff9c4 0%, #ffffff 100%);
+}
+
+.rank-1 .rank-col {
+    font-size: 1.5rem;
+}
+
+.rank-2 {
+    background: #fdfdfd;
+}
+
+.rank-3 {
+    background: #fffcfc;
+}

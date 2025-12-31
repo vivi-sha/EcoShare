@@ -1,0 +1,99 @@
+{
+  "users": [
+    {
+      "id": "35090ee8-1f99-4f35-b4a1-ed0fbcc84a8e",
+      "name": "Tester",
+      "email": "test@test.com",
+      "password": "123",
+      "ecoPoints": 50
+    },
+    {
+      "id": "d34af407-a106-47b4-b82a-ed50ee976a42",
+      "name": "panchami",
+      "email": "panchami@gmail.com",
+      "password": "12345",
+      "ecoPoints": 0
+    },
+    {
+      "id": "6f93f520-b1f8-4d3e-a204-d11c99f7dac2",
+      "name": "harsh",
+      "email": "harsh@gmail.com",
+      "password": "12345",
+      "ecoPoints": 50
+    },
+    {
+      "id": "b29d00b8-86b8-4c96-9385-b8d9ffd3fd85",
+      "name": "niki",
+      "email": "niki@gmail.com",
+      "password": "12345",
+      "ecoPoints": 0
+    }
+  ],
+  "trips": [
+    {
+      "id": "679a2c61-fd3e-4081-8966-d1819f35e950",
+      "name": "Goa 2025",
+      "destination": "Goa",
+      "creatorId": "35090ee8-1f99-4f35-b4a1-ed0fbcc84a8e",
+      "members": [
+        "35090ee8-1f99-4f35-b4a1-ed0fbcc84a8e"
+      ],
+      "shareCode": "8123e16d",
+      "expenses": []
+    },
+    {
+      "id": "e935aa2f-381c-4105-813e-4ad2c24108a2",
+      "name": "streetplayy",
+      "destination": "goa",
+      "creatorId": "d34af407-a106-47b4-b82a-ed50ee976a42",
+      "members": [
+        "d34af407-a106-47b4-b82a-ed50ee976a42",
+        "6f93f520-b1f8-4d3e-a204-d11c99f7dac2",
+        "b29d00b8-86b8-4c96-9385-b8d9ffd3fd85"
+      ],
+      "shareCode": "838cbe40",
+      "expenses": []
+    }
+  ],
+  "expenses": [
+    {
+      "id": "a1697afd-ef07-458d-8d20-d2da62b42e62",
+      "tripId": "679a2c61-fd3e-4081-8966-d1819f35e950",
+      "description": "Flight",
+      "amount": 5000,
+      "payerId": "35090ee8-1f99-4f35-b4a1-ed0fbcc84a8e",
+      "splitWith": [
+        "35090ee8-1f99-4f35-b4a1-ed0fbcc84a8e"
+      ],
+      "date": "2025-12-31T15:32:04.663Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "189ea407-c824-4b4e-b78b-40a28733e928",
+      "tripId": "e935aa2f-381c-4105-813e-4ad2c24108a2",
+      "description": "dinnner",
+      "amount": 500,
+      "payerId": "6f93f520-b1f8-4d3e-a204-d11c99f7dac2",
+      "splitWith": [
+        "d34af407-a106-47b4-b82a-ed50ee976a42",
+        "6f93f520-b1f8-4d3e-a204-d11c99f7dac2"
+      ],
+      "date": "2025-12-31T15:37:35.255Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "3f1eaf22-9bd3-418a-aad0-ccc456eb2db1",
+      "tripId": "e935aa2f-381c-4105-813e-4ad2c24108a2",
+      "description": "travel by cycle",
+      "amount": 100,
+      "payerId": "d34af407-a106-47b4-b82a-ed50ee976a42",
+      "splitWith": [
+        "d34af407-a106-47b4-b82a-ed50ee976a42",
+        "6f93f520-b1f8-4d3e-a204-d11c99f7dac2",
+        "b29d00b8-86b8-4c96-9385-b8d9ffd3fd85"
+      ],
+      "date": "2025-12-31T17:40:33.377Z",
+      "isEcoFriendly": false
+    }
+  ]
+}

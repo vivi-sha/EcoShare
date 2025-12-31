@@ -1,0 +1,199 @@
+.trip-header-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    background: linear-gradient(to right, #ffffff, #f9fdfa);
+}
+
+.trip-header-card h1 {
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+
+.trip-invite {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.code-badge {
+    background: #eee;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.copy-btn {
+    background: none;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    padding: 0;
+    opacity: 0.5;
+}
+
+.copy-btn:hover {
+    opacity: 1;
+}
+
+.members-list {
+    display: flex;
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-secondary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid white;
+    margin-left: -10px;
+}
+
+.member-avatar:first-child {
+    margin-left: 0;
+}
+
+/* Tabs */
+.trip-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.trip-tabs button {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    font-size: 1rem;
+    color: #666;
+    border-bottom: 2px solid transparent;
+}
+
+.trip-tabs button.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* Expenses */
+.expenses-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.expense-form-card {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px dashed #ccc;
+}
+
+.expense-list-detail {
+    list-style: none;
+    background: white;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+.expense-row {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.exp-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    width: 40px;
+    text-align: center;
+}
+
+.exp-info {
+    flex: 1;
+}
+
+.exp-info h4 {
+    margin-bottom: 0.2rem;
+}
+
+.exp-info p {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.exp-amount {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Settlement */
+.balance-grid {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.balance-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.balance-card span {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.balance-card.pos strong {
+    color: var(--color-primary);
+}
+
+.balance-card.neg strong {
+    color: #E53935;
+}
+
+.debt-list {
+    list-style: none;
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.debt-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+}
+
+.debt-item:last-child {
+    border-bottom: none;
+}
+
+.debt-item .money {
+    color: var(--color-primary);
+    font-weight: 800;
+}
