@@ -1,0 +1,159 @@
+:root {
+  /* Core Palette - Emerald Premium & Safe */
+  --primary: #047857;
+  /* Emerald Green (Primary Action) */
+  --primary-light: #34D399;
+  /* Soft Emerald (Secondary/Highlights) */
+  --accent: #10B981;
+  /* Mint Highlight (CTA/Accents) */
+
+  --bg-body: #F8FAFC;
+  /* Off-White (Global Background) */
+  --bg-card: #FFFFFF;
+  /* Pure White (Card Surfaces) */
+  --bg-input: #FFFFFF;
+  /* Input Fields */
+
+  --text-main: #1F2933;
+  /* Charcoal (Primary Text) */
+  --text-secondary: #6B7280;
+  /* Cool Gray (Muted Text) */
+  --text-inverse: #FFFFFF;
+  /* White (Button Text) */
+
+  --border: #E5E7EB;
+  /* Light Gray (Subtle Borders) */
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --radius: 0.75rem;
+  /* Clean, modern rounded corners */
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--text-main);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.25;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.15s ease;
+}
+
+/* Global Components */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Replaces 'glass-panel' with 'card' style for this theme */
+.glass-panel,
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background-color: #036045;
+  /* Darker Emerald for Hover */
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background-color: #F3F4F6;
+  /* Very light gray hover */
+  border-color: #D1D5DB;
+}
+
+/* Inputs */
+input,
+select,
+textarea {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.1);
+  /* Soft emerald ring */
+}
+
+input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Utilities */
+.text-gradient {
+  color: var(--primary);
+  /* Optional: Keep plain color for professional look, or subtle gradient */
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

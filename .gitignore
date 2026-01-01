@@ -1,0 +1,23 @@
+# Dependencies
+node_modules
+server/node_modules
+
+# Build
+dist
+build
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# EcoShare Specifics
+# NOTE: We are intentionally formatting this to INCLUDE the database and uploads
+# so you can clone this and have the exact state. 
+# In a real production app, you would ignore these!
+# db.json
+# server/uploads/

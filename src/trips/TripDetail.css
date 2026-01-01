@@ -1,0 +1,228 @@
+.trip-header-card {
+    background-color: var(--bg-card) !important;
+    border: 1px solid var(--border);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    color: var(--text-main);
+}
+
+.trip-header-card h1 {
+    margin-bottom: 0.5rem;
+    color: var(--text-main);
+    /* Dark Charcoal for title */
+    font-size: 2.25rem;
+    letter-spacing: -0.03em;
+}
+
+.trip-invite {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.code-badge {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--accent-500);
+}
+
+.copy-btn {
+    background: none;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+    padding: 0;
+    opacity: 0.7;
+    color: var(--text-main);
+}
+
+.copy-btn:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.members-list {
+    display: flex;
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-500);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    border: 2px solid var(--bg-dark);
+    margin-left: -10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.member-avatar:first-child {
+    margin-left: 0;
+}
+
+/* Tabs */
+.trip-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.trip-tabs button {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+}
+
+.trip-tabs button.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    font-weight: 600;
+}
+
+/* Expenses */
+.expenses-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.expense-form-card {
+    background: var(--bg-surface);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+}
+
+.expense-form-card input,
+.expense-form-card select {
+    background-color: #F8FAFC;
+    /* Slight distinct background */
+    border-color: #CBD5E1;
+    /* Darker border for visibility */
+    color: #1F2933 !important;
+    /* Force Charcoal text */
+}
+
+.expense-form-card input::placeholder {
+    color: #94A3B8 !important;
+    /* Visible placeholder */
+}
+
+
+.expense-list-detail {
+    list-style: none;
+    background: var(--bg-surface);
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.expense-row {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-main);
+}
+
+.exp-icon {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+    width: 40px;
+    text-align: center;
+}
+
+.exp-info {
+    flex: 1;
+}
+
+.exp-info h4 {
+    margin-bottom: 0.2rem;
+}
+
+.exp-info p {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.exp-amount {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Settlement */
+.balance-grid {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.balance-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    flex: 1;
+    min-width: 150px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.balance-card span {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+}
+
+.balance-card.pos strong {
+    color: var(--color-primary);
+}
+
+.balance-card.neg strong {
+    color: #E53935;
+}
+
+.debt-list {
+    list-style: none;
+    background: white;
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.debt-item {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    font-size: 1.1rem;
+}
+
+.debt-item:last-child {
+    border-bottom: none;
+}
+
+.debt-item .money {
+    color: var(--color-primary);
+    font-weight: 800;
+}

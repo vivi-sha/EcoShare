@@ -1,0 +1,220 @@
+{
+  "users": [
+    {
+      "id": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "name": "Harsh Bafna",
+      "email": "bafnaharsh425@gmail.com",
+      "password": "12345678",
+      "ecoPoints": 10,
+      "donatedPoints": 0,
+      "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocIM3iSaMi8_87bpkf_574DXYSSWcv6EPQ-WyxF-mV9q7DtO2iLW=s96-c"
+    },
+    {
+      "id": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "name": "Kelly",
+      "email": "kelly123@gmail.com",
+      "password": "12345678",
+      "ecoPoints": 560,
+      "donatedPoints": 0
+    }
+  ],
+  "trips": [
+    {
+      "id": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "name": "Goa 2025",
+      "destination": "Goa",
+      "creatorId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "members": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "shareCode": "d60d486c",
+      "expenses": [],
+      "date": "2025-12-31T19:07:35.788Z"
+    }
+  ],
+  "expenses": [
+    {
+      "id": "f13a58c6-02ba-4a80-8491-9e23b50eb904",
+      "tripId": "7f77d856-6019-486f-a675-349c473d766b",
+      "description": "Dinner ",
+      "amount": 1234,
+      "payerId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028"
+      ],
+      "date": "2025-12-31T20:19:48.564Z",
+      "isEcoFriendly": false
+    },
+    {
+      "id": "0ca48cc2-e795-4aa3-af01-e909d22558d3",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Dinner",
+      "amount": 1234,
+      "payerId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028"
+      ],
+      "date": "2025-12-31T20:23:10.929Z",
+      "isEcoFriendly": false
+    },
+    {
+      "id": "26961ccc-481b-4b4d-8a5b-339e980d57d9",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Cycle rent",
+      "amount": 500,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T20:38:22.664Z",
+      "isEcoFriendly": false
+    },
+    {
+      "id": "cc66de76-2549-4988-92de-f031e23f1f66",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Cycle rent ",
+      "amount": 200,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T20:59:30.673Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "594d11b2-faaf-4644-b5e0-4ce11e053cc4",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Vegan food",
+      "amount": 400,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:08:01.160Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "7cb77032-a08e-4310-9a6f-a8460c2e7c46",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike Rental",
+      "amount": 100,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:12:08.180Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "1589041c-987b-4bf4-af4d-ac8479ea3621",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike Rental",
+      "amount": 50,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:14:05.341Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "90d69872-8986-43ba-af4d-99500d3ab136",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike Rental",
+      "amount": 100,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:17:00.417Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "d8115b29-56b2-4edd-bbfe-4703a2950685",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike Rental",
+      "amount": 20,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:18:19.114Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "1132f38c-9333-477a-8af4-574e7d619113",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike Rental",
+      "amount": 120,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:21:03.248Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "b48227d8-0c78-4df2-8366-d030b31e0507",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike Rental",
+      "amount": 140,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:22:49.010Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "a55059bd-8aa4-4822-a8c3-6bb44c2a748b",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike rental",
+      "amount": 133,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:23:54.603Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "7dede4dc-0c57-4199-b7dd-a783485898f7",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike rental",
+      "amount": 132,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:25:12.727Z",
+      "isEcoFriendly": true
+    },
+    {
+      "id": "61614b50-2d7f-46ce-9aea-38760acee0f8",
+      "tripId": "01be1bd0-cf31-4743-844c-267b19a36f2d",
+      "description": "Bike rentals",
+      "amount": 123,
+      "payerId": "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4",
+      "splitWith": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "ecbe0eb3-5421-462f-bca5-f12e7a3d67b4"
+      ],
+      "date": "2025-12-31T21:33:38.909Z",
+      "isEcoFriendly": true,
+      "proofImageUrl": "http://localhost:3000/uploads/1767216818824-images.jpg",
+      "verification": null
+    }
+  ]
+}

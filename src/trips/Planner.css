@@ -1,0 +1,156 @@
+.planner {
+    margin-top: 1rem;
+}
+
+.planner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.trip-card {
+    background-color: var(--bg-card);
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease-in-out;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    color: var(--text-main);
+}
+
+.trip-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.trip-image-placeholder {
+    height: 140px;
+    background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.trip-details {
+    padding: 1.25rem;
+}
+
+.trip-details h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+}
+
+.trip-dates {
+    font-size: 0.875rem;
+    color: #777;
+    margin-bottom: 1rem;
+}
+
+.trip-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge {
+    background: #E8F5E9;
+    color: var(--color-primary);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.participants {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.add-trip-card {
+    background: #f8f9fa;
+    border: 2px dashed #ddd;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 250px;
+    cursor: pointer;
+    color: #888;
+    transition: all 0.2s;
+}
+
+.add-trip-card:hover {
+    border-color: var(--color-primary-light);
+    color: var(--color-primary);
+    background: #F0FDF4;
+}
+
+.add-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Form Styles */
+.new-trip-form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-lg);
+}
+
+.new-trip-form-container h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #444;
+}
+
+.input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    border-color: var(--color-primary);
+    outline: none;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.btn-secondary {
+    background: #f1f1f1;
+    color: #555;
+}
+
+.btn-secondary:hover {
+    background: #e1e1e1;
+}

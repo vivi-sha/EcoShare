@@ -1,0 +1,157 @@
+{
+  "users": [
+    {
+      "id": "29445377-dd89-4570-bd84-a507dbb42bae",
+      "name": "kelly",
+      "email": "kelly123@gmail.com",
+      "password": "12345678",
+      "ecoPoints": 10,
+      "donatedPoints": 0
+    },
+    {
+      "id": "be4bb859-9bdf-471f-8a1d-e3961accad84",
+      "name": "Harsh Bafna",
+      "email": "bafnaharsh425@gmail.com",
+      "password": null,
+      "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocIM3iSaMi8_87bpkf_574DXYSSWcv6EPQ-WyxF-mV9q7DtO2iLW=s96-c",
+      "ecoPoints": 10,
+      "donatedPoints": 0
+    }
+  ],
+  "trips": [
+    {
+      "id": "82ed1261-0332-4a5b-8b21-ec2dbdf245d7",
+      "name": "Bnagalore 2025",
+      "destination": "bngalore",
+      "creatorId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "members": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028"
+      ],
+      "shareCode": "fe1ca954",
+      "expenses": [],
+      "date": "2026-01-01T05:04:12.850Z"
+    },
+    {
+      "id": "81cd9bc8-41c4-4dcc-a2b5-3f967dd5f6e8",
+      "name": "Bnagalore 2025",
+      "destination": "bngalore",
+      "creatorId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "members": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028"
+      ],
+      "shareCode": "c4cf2309",
+      "expenses": [],
+      "date": "2026-01-01T05:04:23.409Z"
+    },
+    {
+      "id": "bec98ef4-0b04-4afd-a87b-9487adfcdd63",
+      "name": "Bnagalore 2025",
+      "destination": "bngalore",
+      "creatorId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "members": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028"
+      ],
+      "shareCode": "31319216",
+      "expenses": [],
+      "date": "2026-01-01T05:04:24.000Z"
+    },
+    {
+      "id": "45efd1d7-6240-4124-a6a1-c3619e6b5018",
+      "name": "Bnagalore 2025",
+      "destination": "bngalore",
+      "creatorId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "members": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028"
+      ],
+      "shareCode": "731f0f23",
+      "expenses": [],
+      "date": "2026-01-01T05:04:24.405Z"
+    },
+    {
+      "id": "c39ee06c-9912-4b7a-a46d-eac28000d9f4",
+      "name": "Bnagalore 2025",
+      "destination": "bngalore",
+      "creatorId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+      "members": [
+        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
+        "29445377-dd89-4570-bd84-a507dbb42bae"
+      ],
+      "shareCode": "e27f4686",
+      "expenses": [],
+      "date": "2026-01-01T05:04:24.624Z"
+    },
+    {
+      "id": "e9b2174e-fa31-4cfa-a82b-7142c1f27e87",
+      "name": "Blroe",
+      "destination": "blorwrea",
+      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
+      "members": [
+        "be4bb859-9bdf-471f-8a1d-e3961accad84"
+      ],
+      "shareCode": "99098be8",
+      "expenses": [],
+      "date": "2026-01-01T05:16:17.312Z"
+    },
+    {
+      "id": "d9774013-a1b4-4e5a-99a9-4142fc88f445",
+      "name": "Blroe",
+      "destination": "blorwrea",
+      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
+      "members": [
+        "be4bb859-9bdf-471f-8a1d-e3961accad84"
+      ],
+      "shareCode": "b52e0d6f",
+      "expenses": [],
+      "date": "2026-01-01T05:16:20.156Z"
+    },
+    {
+      "id": "d65cd9cb-7299-4a05-9567-9128059e0d5b",
+      "name": "Blroe",
+      "destination": "blorwrea",
+      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
+      "members": [
+        "be4bb859-9bdf-471f-8a1d-e3961accad84"
+      ],
+      "shareCode": "c4fc7664",
+      "expenses": [],
+      "date": "2026-01-01T05:16:20.313Z"
+    },
+    {
+      "id": "21ae539c-6c67-4c8e-80c4-8e682e399b06",
+      "name": "Blroe",
+      "destination": "blorwrea",
+      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
+      "members": [
+        "be4bb859-9bdf-471f-8a1d-e3961accad84"
+      ],
+      "shareCode": "e16c67e1",
+      "expenses": [],
+      "date": "2026-01-01T05:16:20.461Z"
+    },
+    {
+      "id": "38e090ab-5fd5-48f8-97dc-dbde50f3fe0d",
+      "name": "Blroe",
+      "destination": "blorwrea",
+      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
+      "members": [
+        "be4bb859-9bdf-471f-8a1d-e3961accad84"
+      ],
+      "shareCode": "281bf288",
+      "expenses": [],
+      "date": "2026-01-01T05:16:20.609Z"
+    },
+    {
+      "id": "1f929901-d742-49fb-a044-96edadf058ed",
+      "name": "Blroe",
+      "destination": "blorwrea",
+      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
+      "members": [
+        "be4bb859-9bdf-471f-8a1d-e3961accad84"
+      ],
+      "shareCode": "344d47ac",
+      "expenses": [],
+      "date": "2026-01-01T05:16:20.763Z"
+    }
+  ],
+  "expenses": []
+}
