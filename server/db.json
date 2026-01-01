@@ -14,7 +14,7 @@
       "email": "bafnaharsh425@gmail.com",
       "password": null,
       "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocIM3iSaMi8_87bpkf_574DXYSSWcv6EPQ-WyxF-mV9q7DtO2iLW=s96-c",
-      "ecoPoints": 210,
+      "ecoPoints": 160,
       "donatedPoints": 0
     },
     {
@@ -77,19 +77,6 @@
       "date": "2026-01-01T05:04:24.405Z"
     },
     {
-      "id": "c39ee06c-9912-4b7a-a46d-eac28000d9f4",
-      "name": "Bnagalore 2025",
-      "destination": "bngalore",
-      "creatorId": "4680445b-2b95-42cf-8ee7-4dc0c6897028",
-      "members": [
-        "4680445b-2b95-42cf-8ee7-4dc0c6897028",
-        "29445377-dd89-4570-bd84-a507dbb42bae"
-      ],
-      "shareCode": "e27f4686",
-      "expenses": [],
-      "date": "2026-01-01T05:04:24.624Z"
-    },
-    {
       "id": "d65cd9cb-7299-4a05-9567-9128059e0d5b",
       "name": "Blroe",
       "destination": "blorwrea",
@@ -101,42 +88,6 @@
       "shareCode": "c4fc7664",
       "expenses": [],
       "date": "2026-01-01T05:16:20.313Z"
-    },
-    {
-      "id": "21ae539c-6c67-4c8e-80c4-8e682e399b06",
-      "name": "Blroe",
-      "destination": "blorwrea",
-      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
-      "members": [
-        "be4bb859-9bdf-471f-8a1d-e3961accad84"
-      ],
-      "shareCode": "e16c67e1",
-      "expenses": [],
-      "date": "2026-01-01T05:16:20.461Z"
-    },
-    {
-      "id": "38e090ab-5fd5-48f8-97dc-dbde50f3fe0d",
-      "name": "Blroe",
-      "destination": "blorwrea",
-      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
-      "members": [
-        "be4bb859-9bdf-471f-8a1d-e3961accad84"
-      ],
-      "shareCode": "281bf288",
-      "expenses": [],
-      "date": "2026-01-01T05:16:20.609Z"
-    },
-    {
-      "id": "1f929901-d742-49fb-a044-96edadf058ed",
-      "name": "Blroe",
-      "destination": "blorwrea",
-      "creatorId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
-      "members": [
-        "be4bb859-9bdf-471f-8a1d-e3961accad84"
-      ],
-      "shareCode": "344d47ac",
-      "expenses": [],
-      "date": "2026-01-01T05:16:20.763Z"
     },
     {
       "id": "ca54c9a8-3200-4037-832a-ed46854c823b",
@@ -188,40 +139,25 @@
       }
     },
     {
-      "id": "aedf6f8a-c52c-464e-a598-9f8cead0f3f0",
+      "id": "5cde07f7-a5f2-495d-9e00-41e6761e2a3e",
       "tripId": "d65cd9cb-7299-4a05-9567-9128059e0d5b",
-      "description": "Bike rental",
-      "amount": 740,
+      "description": "Bike rentals",
+      "amount": 400,
       "payerId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
       "splitWith": [
         "be4bb859-9bdf-471f-8a1d-e3961accad84",
         "be95c05c-57bb-4143-beb0-8fe58f82bfad"
       ],
-      "date": "2026-01-01T06:12:35.862Z",
+      "date": "2026-01-01T07:34:17.798Z",
       "isEcoFriendly": true,
-      "proofImageUrl": "http://localhost:3000/uploads/1767247955850-images.jpg",
+      "proofImageUrl": "http://localhost:3000/uploads/1767252857779-images.jpg",
       "verification": {
-        "timestamp": "2026-01-01T06:12:33.669Z",
+        "timestamp": "2026-01-01T07:34:16.411Z",
         "location": {
-          "lat": 12.9407626,
-          "lng": 77.5655898
+          "lat": 12.940524,
+          "lng": 77.5597813
         }
       }
-    },
-    {
-      "id": "0c98f514-e432-411e-9b36-bf9790c58d5e",
-      "tripId": "d65cd9cb-7299-4a05-9567-9128059e0d5b",
-      "description": "Dinner",
-      "amount": 1213,
-      "payerId": "be4bb859-9bdf-471f-8a1d-e3961accad84",
-      "splitWith": [
-        "be4bb859-9bdf-471f-8a1d-e3961accad84",
-        "be95c05c-57bb-4143-beb0-8fe58f82bfad"
-      ],
-      "date": "2026-01-01T06:19:32.337Z",
-      "isEcoFriendly": true,
-      "proofImageUrl": "http://localhost:3000/uploads/1767248372280-1000174387 (1).jpg",
-      "verification": null
     }
   ]
 }

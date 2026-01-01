@@ -9,7 +9,7 @@
 }
 
 .trip-card {
-    background-color: var(--bg-card);
+    background-color: var(#228b22);
     border-radius: 1rem;
     overflow: hidden;
     box-shadow: var(--shadow-sm);
@@ -31,7 +31,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: rgb(255, 255, 255);
     font-weight: 700;
     font-size: 1.2rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);

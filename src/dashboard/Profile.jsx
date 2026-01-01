@@ -104,7 +104,7 @@ export default function Profile() {
                                         <Cell key={`cell-${index}`} fill={entry.fill} />
                                     ))}
                                 </Pie>
-                                <Tooltip contentStyle={{ backgroundColor: '#1E293B', borderRadius: '0.5rem', border: 'none' }} />
+                                <Tooltip contentStyle={{ backgroundColor: '#ffffffff', borderRadius: '0.5rem', border: 'none' }} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>

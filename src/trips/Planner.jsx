@@ -95,7 +95,7 @@ export default function Planner({ onSelectTrip }) {
                     <div className="planner-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
                         {trips.map(trip => (
                             <Link to={`/dashboard/trips/${trip.id}`} key={trip.id} className="trip-card glass-panel" style={{ display: 'block', padding: '0', overflow: 'hidden', transition: 'transform 0.2s', position: 'relative' }}>
-                                <div className="trip-image-placeholder" style={{ height: '140px', background: 'linear-gradient(135deg, var(--primary), var(--primary-hover))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                                <div className="trip-image-placeholder" style={{ height: '140px', background: '#228b22', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '1.5rem', fontWeight: 'bold' }}>
                                     <span>{trip.destination || trip.name}</span>
                                 </div>
                                 <div className="trip-details" style={{ padding: '1.5rem' }}>
