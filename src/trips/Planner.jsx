@@ -71,11 +71,11 @@ export default function Planner({ onSelectTrip }) {
         e.preventDefault();
         e.stopPropagation();
 
-        if (!window.confirm('Are you sure you want to delete this trip? This action cannot be undone.')) return;
+        if (!window.confirm('Delete this trip for yourself? History will be preserved for other members.')) return;
 
         try {
             console.log('Sending delete request for:', tripId);
-            const res = await fetch(`${API_URL}/trips/${tripId}`, {
+            const res = await fetch(`${API_URL}/trips/${tripId}?userId=${user.id}`, {
                 method: 'DELETE',
             });
 
@@ -92,6 +92,28 @@ export default function Planner({ onSelectTrip }) {
             console.error('Network error during delete:', e);
             alert('Could not connect to the server to delete the trip.');
         }
+    };
+
+    const handleLeaveTrip = async (e, tripId) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!window.confirm('Are you sure you want to leave this trip? You will no longer be a member.')) return;
+
+        try {
+            const res = await fetch(`${API_URL}/trips/${tripId}/leave`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id })
+            });
+
+            if (res.ok) {
+                setTrips(prevTrips => prevTrips.filter(t => t.id !== tripId));
+            } else {
+                const error = await res.json();
+                alert('Failed to leave trip: ' + (error.error || 'Server error'));
+            }
+        } catch (e) { console.error(e); }
     };
 
     return (
@@ -116,39 +138,81 @@ export default function Planner({ onSelectTrip }) {
                                     flexDirection: 'column'
                                 }}
                             >
-                                {/* Delete Action - High Z-Index Overlay */}
-                                <button
-                                    onClick={(e) => handleDeleteTrip(e, trip.id)}
-                                    title="Delete Trip"
-                                    style={{
-                                        position: 'absolute',
-                                        top: '0.75rem',
-                                        right: '0.75rem',
-                                        zIndex: 30,
-                                        width: '36px',
-                                        height: '36px',
-                                        borderRadius: '50%',
-                                        background: 'rgba(255, 255, 255, 0.9)',
-                                        border: '1px solid #fee2e2',
-                                        color: '#ef4444',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        cursor: 'pointer',
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                        fontSize: '1.1rem'
-                                    }}
-                                    onMouseOver={(e) => {
-                                        e.currentTarget.style.background = '#fee2e2';
-                                        e.currentTarget.style.transform = 'scale(1.1)';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.9)';
-                                        e.currentTarget.style.transform = 'scale(1)';
-                                    }}
-                                >
-                                    🗑️
-                                </button>
+                                {/* Action Buttons - Balanced Minimalism */}
+                                <div style={{
+                                    position: 'absolute',
+                                    top: '0.6rem',
+                                    right: '0.6rem',
+                                    zIndex: 30,
+                                    display: 'flex',
+                                    gap: '0.5rem'
+                                }}>
+                                    {/* Leave/Exit Action */}
+                                    <button
+                                        onClick={(e) => handleLeaveTrip(e, trip.id)}
+                                        title="Leave Trip"
+                                        style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            background: 'rgba(255, 255, 255, 0.15)',
+                                            backdropFilter: 'blur(4px)',
+                                            border: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            fontSize: '1rem',
+                                            transition: 'all 0.2s',
+                                            opacity: 0.8
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.currentTarget.style.background = 'rgba(14, 165, 233, 0.2)';
+                                            e.currentTarget.style.opacity = 1;
+                                            e.currentTarget.style.transform = 'scale(1.1)';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                                            e.currentTarget.style.opacity = 0.8;
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }}
+                                    >
+                                        🚪
+                                    </button>
+
+                                    {/* Delete Action */}
+                                    <button
+                                        onClick={(e) => handleDeleteTrip(e, trip.id)}
+                                        title="Delete (Hide) Trip"
+                                        style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            borderRadius: '50%',
+                                            background: 'rgba(255, 255, 255, 0.15)',
+                                            backdropFilter: 'blur(4px)',
+                                            border: 'none',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            fontSize: '1rem',
+                                            transition: 'all 0.2s',
+                                            opacity: 0.8
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                                            e.currentTarget.style.opacity = 1;
+                                            e.currentTarget.style.transform = 'scale(1.1)';
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+                                            e.currentTarget.style.opacity = 0.8;
+                                            e.currentTarget.style.transform = 'scale(1)';
+                                        }}
+                                    >
+                                        🗑️
+                                    </button>
+                                </div>
 
                                 {/* Main Card Link (Using clickable div for better event control) */}
                                 <div

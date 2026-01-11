@@ -1,7 +1,43 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
 import './Rewards.css';
 
-export default function Rewards({ user }) {
+export default function Rewards() {
+    const { user, refreshUser } = useAuth();
+
+    const handleDonate = async (ngo) => {
+        if (!user) {
+            alert('Please log in to make donations.');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to donate ${ngo.cost} points to ${ngo.name}?`)) return;
+
+        try {
+            const res = await fetch('http://localhost:3000/api/donate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    userId: user.id,
+                    amount: ngo.cost,
+                    cause: ngo.name
+                })
+            });
+
+            if (res.ok) {
+                alert('Thank you for your donation! 🌟');
+                // Refresh user data to update eco-points and activity feed
+                if (refreshUser) await refreshUser();
+            } else {
+                const error = await res.json();
+                alert(error.error || 'Donation failed');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Donation failed');
+        }
+    };
+
     const ngos = [
         {
             id: 1,
@@ -69,7 +105,11 @@ export default function Rewards({ user }) {
                                 <p>{ngo.desc}</p>
                                 <div className="cost-row">
                                     <span className="cost">{ngo.cost} pts</span>
-                                    <button className="btn btn-primary btn-sm" disabled={!user || user.ecoPoints < ngo.cost}>
+                                    <button
+                                        className="btn btn-primary btn-sm"
+                                        disabled={!user || user.ecoPoints < ngo.cost}
+                                        onClick={() => handleDonate(ngo)}
+                                    >
                                         Donate
                                     </button>
                                 </div>

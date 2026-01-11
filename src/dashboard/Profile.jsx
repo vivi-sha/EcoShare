@@ -109,6 +109,7 @@ export default function Profile() {
                         </ResponsiveContainer>
                     </div>
                     <p className="impact-summary" style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>You're making a difference!</p>
+                    <Link to="/dashboard/impact" className="btn-text" style={{ display: 'block', marginTop: '1rem', textAlign: 'center', color: 'var(--primary-500)', fontSize: '0.9rem' }}>View Impact Details →</Link>
                 </div>
 
                 <div className="dashboard-card glass-panel" style={{ padding: '1.5rem', position: 'relative' }}>

@@ -11,7 +11,33 @@ export default function TripDetail({ tripId }) {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('expenses'); // expenses | settlement
     const [showExpenseForm, setShowExpenseForm] = useState(false);
-    const { user } = useAuth();
+    const [showShareMenu, setShowShareMenu] = useState(false);
+    const { user, refreshUser } = useAuth();
+
+    const handleShare = async (platform) => {
+        const joinUrl = `${window.location.origin}/join/${trip.shareCode}`;
+        const text = `Join my trip "${trip.name}" on EcoShare! 🌍✈️\n\nClick here to join: ${joinUrl}`;
+
+        if (platform === 'native' && navigator.share) {
+            try {
+                await navigator.share({
+                    title: `Join ${trip.name}`,
+                    text: text,
+                    url: joinUrl,
+                });
+            } catch (e) { console.error('Share failed', e); }
+        } else if (platform === 'whatsapp') {
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        } else if (platform === 'telegram') {
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(joinUrl)}&text=${encodeURIComponent(text)}`, '_blank');
+        } else if (platform === 'mail') {
+            window.location.href = `mailto:?subject=Join my trip ${trip.name}&body=${encodeURIComponent(text)}`;
+        } else if (platform === 'copy') {
+            navigator.clipboard.writeText(joinUrl);
+            alert('Link copied to clipboard! 📋');
+        }
+        setShowShareMenu(false);
+    };
 
     // Expense Form State
     const [desc, setDesc] = useState('');
@@ -74,8 +100,6 @@ export default function TripDetail({ tripId }) {
             }
         } catch (e) { console.error(e); }
     };
-
-    const code = trip ? trip.shareCode : '';
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
@@ -148,7 +172,9 @@ export default function TripDetail({ tripId }) {
             if (res.ok) {
                 setShowExpenseForm(false);
                 setDesc(''); setAmount(''); setIsManualEco(false); setProofFile(null);
-                fetchTripData(); // Refresh all
+                fetchTripData(); // Refresh trip data
+                // Refresh user data to update eco-points and trigger activity feed update
+                if (refreshUser) await refreshUser();
             }
         } catch (e) { console.error(e); }
     };
@@ -216,13 +242,130 @@ export default function TripDetail({ tripId }) {
                 ← Back to Trips
             </Link>
 
-            <div className="trip-header-card glass-panel" style={{ padding: '2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                    <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>{trip.name}</h1>
-                    <p className="trip-invite" style={{ color: 'var(--text-muted)' }}>
-                        Share Code: <span className="code-badge" style={{ background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontFamily: 'monospace', marginLeft: '0.5rem' }}>{code}</span>
-                        <button className="copy-btn" onClick={() => navigator.clipboard.writeText(code)} style={{ marginLeft: '1rem', opacity: 0.7 }}>📋</button>
-                    </p>
+            <div className="trip-header-card glass-panel" style={{ padding: '2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+                <div style={{ flex: 1 }}>
+                    <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{trip.name}</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button
+                            className="invite-btn-cute"
+                            onClick={() => {
+                                if (navigator.share) {
+                                    handleShare('native');
+                                } else {
+                                    setShowShareMenu(true);
+                                }
+                            }}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                background: '#ecfdf5',
+                                border: 'none',
+                                padding: '0.5rem 1.2rem',
+                                borderRadius: '2rem',
+                                color: '#059669',
+                                fontSize: '0.85rem',
+                                fontWeight: '600',
+                                cursor: 'pointer',
+                                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                                boxShadow: '0 2px 8px rgba(5, 150, 105, 0.1)'
+                            }}
+                            onMouseOver={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.05) translateY(-1px)';
+                                e.currentTarget.style.background = '#d1fae5';
+                            }}
+                            onMouseOut={(e) => {
+                                e.currentTarget.style.transform = 'scale(1) translateY(0)';
+                                e.currentTarget.style.background = '#ecfdf5';
+                            }}
+                        >
+                            <span style={{ fontSize: '1rem' }}>+</span>
+                            <span>Invite</span>
+                        </button>
+
+                        <div
+                            className="code-display"
+                            onClick={() => {
+                                navigator.clipboard.writeText(trip.shareCode);
+                                alert('Code copied! 📋');
+                            }}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '0.5rem',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid var(--glass-border)',
+                                padding: '0.4rem 0.8rem',
+                                borderRadius: '0.5rem',
+                                cursor: 'pointer',
+                                fontSize: '0.85rem'
+                            }}
+                            title="Click to copy code"
+                        >
+                            <span style={{ color: 'var(--text-muted)' }}>Code:</span>
+                            <span style={{ color: 'var(--text-main)', fontWeight: 'bold', fontFamily: 'monospace', letterSpacing: '1px' }}>{trip.shareCode}</span>
+                            <span style={{ opacity: 0.5 }}>📋</span>
+                        </div>
+
+                        {showShareMenu && (
+                            <div className="share-modal-overlay" onClick={() => setShowShareMenu(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.7)', backdropFilter: 'blur(4px)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
+                                <div className="share-card glass-panel" onClick={e => e.stopPropagation()} style={{
+                                    background: 'var(--bg-card)',
+                                    width: '100%',
+                                    maxWidth: '400px',
+                                    borderRadius: '1.25rem',
+                                    padding: '2rem',
+                                    animation: 'popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+                                    border: '1px solid var(--border)'
+                                }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                                        <h3 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-main)' }}>Invite Friends</h3>
+                                        <button onClick={() => setShowShareMenu(false)} style={{ background: 'none', border: 'none', fontSize: '1.2rem', cursor: 'pointer', color: 'var(--text-secondary)' }}>✕</button>
+                                    </div>
+
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: '1.5' }}>
+                                        Anyone with this link can join your trip and contribute to expenses.
+                                    </p>
+
+                                    <div className="link-section" style={{ display: 'flex', gap: '0.5rem', marginBottom: '2rem' }}>
+                                        <div style={{ flex: 1, background: '#f8fafc', border: '1px solid var(--border)', borderRadius: '0.75rem', padding: '0.75rem 1rem', fontSize: '0.85rem', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {`${window.location.origin}/join/${trip.shareCode}`}
+                                        </div>
+                                        <button
+                                            onClick={() => handleShare('copy')}
+                                            className="btn btn-primary"
+                                            style={{ padding: '0.75rem 1.25rem', whiteSpace: 'nowrap' }}
+                                        >
+                                            Copy
+                                        </button>
+                                    </div>
+
+                                    <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
+                                        <span style={{ fontSize: '0.8rem', fontWeight: '600', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '1rem' }}>Or share via</span>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
+                                            <button onClick={() => handleShare('whatsapp')} className="share-bubble" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f0fdf4', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', transition: 'transform 0.2s' }}>💬</div>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>WhatsApp</span>
+                                            </button>
+                                            <button onClick={() => handleShare('telegram')} className="share-bubble" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f0f9ff', color: '#0284c7', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>✈️</div>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Telegram</span>
+                                            </button>
+                                            <button onClick={() => handleShare('mail')} className="share-bubble" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#f1f5f9', color: '#475569', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>✉️</div>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Email</span>
+                                            </button>
+                                            <button onClick={() => handleShare('native')} className="share-bubble" style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', background: 'none', border: 'none', cursor: 'pointer' }}>
+                                                <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: '#fef2f2', color: '#dc2626', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem' }}>⋮</div>
+                                                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>More</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="members-list" style={{ display: 'flex' }}>
                     {trip.members.map((m, i) => (
@@ -266,38 +409,92 @@ export default function TripDetail({ tripId }) {
                                             <input type="text" placeholder="e.g. Dinner" className="input" style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} value={desc} onChange={e => setDesc(e.target.value)} />
                                         </div>
                                         <div className="form-group">
-                                            <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Amount</label>
+                                            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.5rem' }}>Amount</div>
                                             <input type="number" placeholder="0.00" className="input" style={{ width: '100%', padding: '0.8rem', borderRadius: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white' }} value={amount} onChange={e => setAmount(e.target.value)} />
                                         </div>
                                     </div>
 
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                                        <div className="payer-section">
-                                            <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--primary-500)', fontWeight: 'bold', marginBottom: '0.8rem' }}>👤 Paid By</label>
-                                            <select
-                                                className="input"
-                                                style={{ width: '100%', padding: '0.7rem', borderRadius: '0.5rem', background: 'var(--bg-dark)', border: '1px solid var(--primary-500)', color: 'white' }}
-                                                value={payerId}
-                                                onChange={e => setPayerId(e.target.value)}
-                                            >
-                                                {trip.members.map(m => <option key={m.id} value={m.id}>{m.name} {m.id === user.id ? '(You)' : ''}</option>)}
-                                            </select>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                                        {/* Paid By Selection */}
+                                        <div className="form-section">
+                                            <label style={{ display: 'block', fontSize: '0.65rem', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.6rem' }}>Paid By</label>
+                                            <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollbarWidth: 'none', whiteSpace: 'nowrap' }}>
+                                                {trip.members.map((m, i) => (
+                                                    <div
+                                                        key={m.id}
+                                                        onClick={() => setPayerId(m.id)}
+                                                        style={{
+                                                            display: 'inline-flex',
+                                                            alignItems: 'center',
+                                                            gap: '0.4rem',
+                                                            padding: '0.35rem 0.75rem',
+                                                            borderRadius: '0.5rem',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.15s ease',
+                                                            background: payerId === m.id ? '#f0fdf4' : 'rgba(255,255,255,0.03)',
+                                                            color: payerId === m.id ? '#15803d' : 'var(--text-main)',
+                                                            border: '1px solid',
+                                                            borderColor: payerId === m.id ? '#22c55e' : 'rgba(255,255,255,0.08)',
+                                                            fontSize: '0.85rem'
+                                                        }}
+                                                    >
+                                                        <div style={{
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            borderRadius: '50%',
+                                                            background: payerId === m.id ? '#22c55e' : `hsl(${i * 60}, 60%, 45%)`,
+                                                            color: 'white',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            fontSize: '0.7rem',
+                                                            fontWeight: 'bold'
+                                                        }}>
+                                                            {payerId === m.id ? '✓' : m.name.charAt(0).toUpperCase()}
+                                                        </div>
+                                                        <span style={{ fontWeight: payerId === m.id ? '700' : '500' }}>
+                                                            {m.name}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <div className="splitter-section">
-                                            <label style={{ display: 'block', fontSize: '0.9rem', color: 'var(--primary-500)', fontWeight: 'bold', marginBottom: '0.8rem' }}>🤝 Split With</label>
-                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '120px', overflowY: 'auto' }}>
+
+                                        {/* Split With Selection */}
+                                        <div className="form-section" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '1rem' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                                                <label style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>Split With</label>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => splitWith.length === trip.members.length ? setSplitWith([]) : setSplitWith(trip.members.map(m => m.id))}
+                                                    style={{ background: 'none', border: 'none', color: '#22c55e', fontSize: '0.7rem', fontWeight: '800', cursor: 'pointer', textTransform: 'uppercase' }}
+                                                >
+                                                    {splitWith.length === trip.members.length ? 'None' : 'All'}
+                                                </button>
+                                            </div>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                                                 {trip.members.map(m => (
-                                                    <label key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.85rem' }}>
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={splitWith.includes(m.id)}
-                                                            onChange={e => {
-                                                                if (e.target.checked) setSplitWith([...splitWith, m.id]);
-                                                                else setSplitWith(splitWith.filter(id => id !== m.id));
-                                                            }}
-                                                        />
+                                                    <div
+                                                        key={m.id}
+                                                        onClick={() => {
+                                                            if (splitWith.includes(m.id)) setSplitWith(splitWith.filter(id => id !== m.id));
+                                                            else setSplitWith([...splitWith, m.id]);
+                                                        }}
+                                                        style={{
+                                                            padding: '0.35rem 0.75rem',
+                                                            borderRadius: '0.5rem',
+                                                            fontSize: '0.85rem',
+                                                            cursor: 'pointer',
+                                                            transition: 'all 0.1s ease',
+                                                            background: splitWith.includes(m.id) ? '#f0fdf4' : 'rgba(255,255,255,0.03)',
+                                                            color: splitWith.includes(m.id) ? '#15803d' : 'var(--text-secondary)',
+                                                            border: '1px solid',
+                                                            borderColor: splitWith.includes(m.id) ? '#22c55e' : 'rgba(255,255,255,0.08)',
+                                                            fontWeight: splitWith.includes(m.id) ? '700' : '500'
+                                                        }}
+                                                    >
                                                         {m.name}
-                                                    </label>
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>

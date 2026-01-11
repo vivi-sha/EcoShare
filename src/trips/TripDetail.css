@@ -222,7 +222,41 @@
     border-bottom: none;
 }
 
-.debt-item .money {
-    color: var(--color-primary);
-    font-weight: 800;
+.invite-btn-minimal:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: var(--primary-500) !important;
+    transform: translateY(-1px);
+}
+
+.share-dropdown {
+    border: 1px solid var(--glass-border) !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.share-opt:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

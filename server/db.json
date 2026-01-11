@@ -23,7 +23,7 @@
       "email": "panchamip.cs24@bmsce.ac.in",
       "password": null,
       "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocJX_kPmrVhfFjmbEMYVo_2FmQgijmI68_pn0RPgtCGimb-B_g=s96-c",
-      "ecoPoints": 10,
+      "ecoPoints": 110,
       "donatedPoints": 0
     },
     {
@@ -48,6 +48,15 @@
       "email": "johnny123@gmail.com",
       "password": "12345678",
       "ecoPoints": 10,
+      "donatedPoints": 0
+    },
+    {
+      "id": "f8f20ff6-6ef8-46ac-850e-c4b54ddb7f98",
+      "name": "Panchami P",
+      "email": "panchamip06@gmail.com",
+      "password": null,
+      "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocKY65CB0U3qxuiVsCRQP4G-vJfj2qkkUr_Cw5Wq6x1d436C6Q=s96-c",
+      "ecoPoints": 60,
       "donatedPoints": 0
     }
   ],
@@ -376,6 +385,31 @@
       "shareCode": "4a051f21",
       "expenses": [],
       "date": "2026-01-11T06:21:34.436Z"
+    },
+    {
+      "id": "f63548bb-4ce7-4619-ade8-fe6d3ffb9657",
+      "name": "goa",
+      "destination": "goa",
+      "creatorId": "be95c05c-57bb-4143-beb0-8fe58f82bfad",
+      "members": [
+        "be95c05c-57bb-4143-beb0-8fe58f82bfad",
+        "e76a0c99-8b7e-49f0-9bd7-8b32925b81ee"
+      ],
+      "shareCode": "8965b765",
+      "expenses": [],
+      "date": "2026-01-11T12:21:59.158Z"
+    },
+    {
+      "id": "c4af3ce1-62db-4a51-9441-9a4c262a867c",
+      "name": "goa",
+      "destination": "goa",
+      "creatorId": "f8f20ff6-6ef8-46ac-850e-c4b54ddb7f98",
+      "members": [
+        "f8f20ff6-6ef8-46ac-850e-c4b54ddb7f98"
+      ],
+      "shareCode": "f4c8fa72",
+      "expenses": [],
+      "date": "2026-01-11T12:34:19.439Z"
     }
   ],
   "expenses": [
@@ -474,6 +508,87 @@
           "lng": 77.6208384
         }
       }
+    },
+    {
+      "id": "13db0c4e-2ce6-4887-98a6-903fa4b5aa94",
+      "tripId": "15609c62-61a2-4835-82ec-f73511684f23",
+      "description": "bike",
+      "amount": 100,
+      "payerId": "e76a0c99-8b7e-49f0-9bd7-8b32925b81ee",
+      "splitWith": [
+        "be95c05c-57bb-4143-beb0-8fe58f82bfad",
+        "e76a0c99-8b7e-49f0-9bd7-8b32925b81ee"
+      ],
+      "date": "2026-01-11T12:08:39.627Z",
+      "isEcoFriendly": true,
+      "proofImageUrl": "http://localhost:3000/uploads/1768133319591-Employee Dancing.gif",
+      "verification": {
+        "timestamp": "2026-01-11T12:08:34.021Z",
+        "location": {
+          "lat": 12.9367119,
+          "lng": 77.57411
+        }
+      }
+    },
+    {
+      "id": "e557550a-0777-4076-97f3-74b9b7807816",
+      "tripId": "f63548bb-4ce7-4619-ade8-fe6d3ffb9657",
+      "description": "bike",
+      "amount": 100,
+      "payerId": "be95c05c-57bb-4143-beb0-8fe58f82bfad",
+      "splitWith": [
+        "be95c05c-57bb-4143-beb0-8fe58f82bfad"
+      ],
+      "date": "2026-01-11T12:26:05.074Z",
+      "isEcoFriendly": true,
+      "proofImageUrl": "http://localhost:3000/uploads/1768134365020-Employee Dancing.gif",
+      "verification": {
+        "timestamp": "2026-01-11T12:26:03.914Z",
+        "location": {
+          "lat": 12.9367119,
+          "lng": 77.57411
+        }
+      }
+    },
+    {
+      "id": "b6d2943d-ef9c-4d80-aeaa-958cb4d4a72e",
+      "tripId": "c4af3ce1-62db-4a51-9441-9a4c262a867c",
+      "description": "bike",
+      "amount": 100,
+      "payerId": "f8f20ff6-6ef8-46ac-850e-c4b54ddb7f98",
+      "splitWith": [
+        "f8f20ff6-6ef8-46ac-850e-c4b54ddb7f98"
+      ],
+      "date": "2026-01-11T12:34:52.237Z",
+      "isEcoFriendly": true,
+      "proofImageUrl": "http://localhost:3000/uploads/1768134892167-Employee Dancing.gif",
+      "verification": {
+        "timestamp": "2026-01-11T12:34:50.828Z",
+        "location": {
+          "lat": 12.9367119,
+          "lng": 77.57411
+        }
+      }
+    },
+    {
+      "id": "9a0301c8-eb93-48af-9055-e3898d177703",
+      "tripId": "f63548bb-4ce7-4619-ade8-fe6d3ffb9657",
+      "description": "eco",
+      "amount": 50,
+      "payerId": "be95c05c-57bb-4143-beb0-8fe58f82bfad",
+      "splitWith": [
+        "be95c05c-57bb-4143-beb0-8fe58f82bfad"
+      ],
+      "date": "2026-01-11T12:39:17.863Z",
+      "isEcoFriendly": true,
+      "proofImageUrl": "http://localhost:3000/uploads/1768135157778-Employee Dancing.gif",
+      "verification": {
+        "timestamp": "2026-01-11T12:39:16.373Z",
+        "location": {
+          "lat": 12.9367119,
+          "lng": 77.57411
+        }
+      }
     }
   ],
   "settlements": [
@@ -492,6 +607,15 @@
       "toUserId": "3acdf570-ff05-4457-96f9-b33de604be45",
       "amount": 100,
       "date": "2026-01-01T10:06:50.017Z"
+    },
+    {
+      "id": "aa511bf5-58e4-4385-bb8b-2f534b836ed3",
+      "tripId": "15609c62-61a2-4835-82ec-f73511684f23",
+      "fromUserId": "be95c05c-57bb-4143-beb0-8fe58f82bfad",
+      "toUserId": "e76a0c99-8b7e-49f0-9bd7-8b32925b81ee",
+      "amount": 50,
+      "date": "2026-01-11T12:08:56.653Z"
     }
-  ]
+  ],
+  "donations": []
 }

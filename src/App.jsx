@@ -9,6 +9,7 @@ import TripDetail from './trips/TripDetail';
 import Leaderboard from './dashboard/Leaderboard';
 import Profile from './dashboard/Profile';
 import ImpactVisualizer from './sustainability/ImpactVisualizer';
+import JoinTrip from './trips/JoinTrip';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import { useAuth } from './context/AuthContext';
@@ -30,6 +31,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<LoginWrapper />} />
+            <Route path="/join/:shareCode" element={<JoinTrip />} />
 
             <Route path="/dashboard" element={
               <ProtectedRoute>
@@ -96,7 +98,16 @@ function App() {
 // Wrapper components
 function LoginWrapper() {
   const { user } = useAuth();
-  if (user) return <Navigate to="/dashboard" replace />;
+  const navigate = useNavigate();
+
+  if (user) {
+    const pending = localStorage.getItem('pendingJoinCode');
+    if (pending) {
+      localStorage.removeItem('pendingJoinCode');
+      return <Navigate to={`/join/${pending}`} replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
   return <Login onLoginSuccess={() => { }} />;
 }
 

@@ -17,7 +17,7 @@ const refreshDb = (req, res, next) => {
 };
 
 // Defaults
-db.defaults({ users: [], trips: [], expenses: [], settlements: [] }).write();
+db.defaults({ users: [], trips: [], expenses: [], settlements: [], donations: [] }).write();
 
 const app = express();
 app.use(cors());
@@ -90,6 +90,19 @@ app.post('/api/upload', upload.single('proof'), (req, res) => {
     res.json({ url: `http://localhost:3000/uploads/${req.file.filename}` });
 });
 
+// Get single user by ID
+app.get('/api/users/:id', (req, res) => {
+    db.read();
+    const user = db.get('users').find({ id: req.params.id }).value();
+    if (user) {
+        // Don't send password
+        const { password, ...userWithoutPassword } = user;
+        res.json(userWithoutPassword);
+    } else {
+        res.status(404).json({ error: 'User not found' });
+    }
+});
+
 // --- Trip Routes ---
 // --- Trip Routes ---
 app.post('/api/trips', (req, res) => {
@@ -105,6 +118,13 @@ app.post('/api/trips', (req, res) => {
         date: new Date().toISOString()
     };
     db.get('trips').push(trip).write();
+
+    // Award 5 points for starting a trip
+    const user = db.get('users').find({ id: userId }).value();
+    if (user) {
+        db.get('users').find({ id: userId }).assign({ ecoPoints: (user.ecoPoints || 0) + 5 }).write();
+    }
+
     res.json(trip);
 });
 
@@ -123,7 +143,11 @@ app.get('/api/trips/user/:userId', (req, res) => {
     // but when fetching, we might want to populate names if needed, OR the frontend handles it.
 
     const trips = db.get('trips')
-        .filter(trip => trip.members.some(m => (typeof m === 'string' ? m === userId : m.id === userId)))
+        .filter(trip => {
+            const isMember = trip.members.some(m => (typeof m === 'string' ? m === userId : m.id === userId));
+            const isDeletedForUser = trip.deletedForUsers && trip.deletedForUsers.includes(userId);
+            return isMember && !isDeletedForUser;
+        })
         .value();
     res.json(trips);
 });
@@ -145,21 +169,68 @@ app.get('/api/trips/:id', (req, res) => {
     }
 });
 
-// Delete a trip
+// Delete/Leave a trip for a specific user
 app.delete('/api/trips/:id', (req, res) => {
     const { id } = req.params;
-    console.log(`Attempting to delete trip with ID: ${id}`);
+    const { userId } = req.query;
 
-    // Use lowdb v1 syntax: .remove() returns the removed elements
-    const removed = db.get('trips').remove({ id }).write();
+    console.log(`User ${userId} attempting to delete trip from their view: ${id}`);
 
-    if (removed && removed.length > 0) {
-        console.log(`Trip ${id} deleted successfully.`);
-        res.json({ success: true });
-    } else {
-        console.error(`Trip ${id} not found.`);
-        res.status(404).json({ error: 'Trip not found' });
+    const trip = db.get('trips').find({ id }).value();
+
+    if (!trip) {
+        return res.status(404).json({ error: 'Trip not found' });
     }
+
+    // Initialize deletedForUsers if it doesn't exist
+    const deletedForUsers = trip.deletedForUsers || [];
+
+    if (!deletedForUsers.includes(userId)) {
+        deletedForUsers.push(userId);
+    }
+
+    // Check if everyone has deleted it
+    // Everyone who is a member must also be in deletedForUsers
+    const allMembersDeleted = trip.members.every(m => {
+        const mid = typeof m === 'string' ? m : m.id;
+        return deletedForUsers.includes(mid);
+    });
+
+    if (allMembersDeleted) {
+        // If everyone deleted it, remove it entirely
+        db.get('trips').remove({ id }).write();
+        console.log(`Trip ${id} deleted entirely as all members removed it.`);
+    } else {
+        // Otherwise just mark it as deleted for this specific user
+        db.get('trips').find({ id }).assign({ deletedForUsers }).write();
+        console.log(`Trip ${id} hidden for user ${userId}.`);
+    }
+
+    res.json({ success: true });
+});
+
+// Leave a trip (officially remove from members)
+app.post('/api/trips/:id/leave', (req, res) => {
+    const { id } = req.params;
+    const { userId } = req.body;
+
+    console.log(`User ${userId} attempting to leave trip: ${id}`);
+
+    const trip = db.get('trips').find({ id }).value();
+    if (!trip) return res.status(404).json({ error: "Trip not found" });
+
+    // Filter out the user from members
+    const updatedMembers = trip.members.filter(m => (typeof m === 'string' ? m !== userId : m.id !== userId));
+
+    if (updatedMembers.length === 0) {
+        db.get('trips').remove({ id }).write();
+        console.log(`Trip ${id} deleted as last member left.`);
+    } else {
+        db.get('trips').find({ id }).assign({ members: updatedMembers }).write();
+        console.log(`User ${userId} left trip ${id}.`);
+    }
+
+    res.json({ success: true });
 });
 
 app.post('/api/trips/join', (req, res) => {
@@ -170,9 +241,21 @@ app.post('/api/trips/join', (req, res) => {
 
     // Check if already member
     const isMember = trip.members.some(m => (typeof m === 'string' ? m === userId : m.id === userId));
+    // If user previously deleted this trip from their view, restore it
+    if (trip.deletedForUsers && trip.deletedForUsers.includes(userId)) {
+        const updatedDeletedFor = trip.deletedForUsers.filter(id => id !== userId);
+        db.get('trips').find({ id: trip.id }).assign({ deletedForUsers: updatedDeletedFor }).write();
+    }
+
     if (!isMember) {
         trip.members.push(userId); // Store ID to be consistent
         db.get('trips').find({ id: trip.id }).assign({ members: trip.members }).write();
+
+        // Award 2 points for joining a trip
+        const user = db.get('users').find({ id: userId }).value();
+        if (user) {
+            db.get('users').find({ id: userId }).assign({ ecoPoints: (user.ecoPoints || 0) + 2 }).write();
+        }
     }
 
     res.json(trip);
@@ -211,8 +294,14 @@ app.post('/api/donate', (req, res) => {
         .assign({ ecoPoints: newBalance, donatedPoints: newDonated })
         .write();
 
-    // Record donation (optional, for history)
-    // db.get('donations').push({ userId, amount, cause, date: new Date() }).write();
+    // Record donation
+    db.get('donations').push({
+        id: uuidv4(),
+        userId,
+        amount,
+        cause,
+        date: new Date().toISOString()
+    }).write();
 
     res.json({ success: true, newBalance, newDonated });
 });
@@ -407,6 +496,59 @@ app.get('/api/settlements/:tripId', (req, res) => {
         .filter({ tripId: req.params.tripId })
         .value();
     res.json(settlements);
+});
+
+// --- Activity Feed ---
+app.get('/api/user/:userId/activity', (req, res) => {
+    db.read();
+    const { userId } = req.params;
+
+    const userTrips = db.get('trips')
+        .filter(t => t.creatorId === userId && (!t.deletedForUsers || !t.deletedForUsers.includes(userId)))
+        .value()
+        .map(t => ({
+            type: 'TRIP_CREATED',
+            title: `Started trip to ${t.destination || 'a new destination'}`,
+            points: 5,
+            date: t.date
+        }));
+
+    const joinedTrips = db.get('trips')
+        .filter(t => t.creatorId !== userId && t.members.some(m => (typeof m === 'string' ? m === userId : m.id === userId)) && (!t.deletedForUsers || !t.deletedForUsers.includes(userId)))
+        .value()
+        .map(t => ({
+            type: 'TRIP_JOINED',
+            title: `Joined trip to ${t.destination || 'a new destination'}`,
+            points: 2,
+            date: t.date // Ideally we'd have a join date, but trip date is a fallback
+        }));
+
+    const ecoExpenses = db.get('expenses')
+        .filter(e => e.payerId === userId && e.isEcoFriendly)
+        .value()
+        .map(e => ({
+            type: 'ECO_EXPENSE',
+            title: `Eco-friendly: ${e.description}`,
+            points: 50,
+            date: e.date
+        }));
+
+    const userDonations = db.get('donations')
+        .filter(d => d.userId === userId)
+        .value()
+        .map(d => ({
+            type: 'DONATION',
+            title: `Donated to ${d.cause}`,
+            points: -d.amount,
+            date: d.date
+        }));
+
+    // Combine and sort by date descending
+    const allActivity = [...userTrips, ...joinedTrips, ...ecoExpenses, ...userDonations]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 10); // Last 10 actions
+
+    res.json(allActivity);
 });
 
 app.listen(PORT, () => {

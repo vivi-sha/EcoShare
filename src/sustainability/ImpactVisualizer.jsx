@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useAuth } from '../context/AuthContext';
 import './ImpactVisualizer.css';
@@ -14,6 +14,26 @@ const data = [
 
 export default function ImpactVisualizer() {
     const { user } = useAuth();
+    const [activities, setActivities] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    const fetchActivity = async () => {
+        if (!user) return;
+        setLoading(true);
+        try {
+            const res = await fetch(`http://localhost:3000/api/user/${user.id}/activity`);
+            const data = await res.json();
+            setActivities(data);
+        } catch (e) {
+            console.error("Failed to fetch activity:", e);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchActivity();
+    }, [user, user?.ecoPoints]); // Refresh when user points change
 
     // Derived from real user points (mocking the conversion for visual effect)
     const points = user?.ecoPoints || 0;
@@ -25,6 +45,18 @@ export default function ImpactVisualizer() {
         { label: "CO2 Saved", value: `${co2Saved}kg`, icon: "☁️", color: "#10B981" },
         { label: "Trees Planted", value: trees, icon: "🌳", color: "#3B82F6" },
     ];
+
+    const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays < 7) return `${diffDays} days ago`;
+        return date.toLocaleDateString();
+    };
 
     return (
         <div className="impact-container fade-in">
@@ -67,23 +99,48 @@ export default function ImpactVisualizer() {
             </div>
 
             <div className="recent-activity glass-panel" style={{ padding: '2rem' }}>
-                <h3 style={{ marginBottom: '1.5rem' }}>Recent Eco-Actions</h3>
-                <ul className="activity-list" style={{ listStyle: 'none' }}>
-                    <li className="activity-item" style={{ padding: '1rem', borderBottom: '1px solid var(--glass-border)', display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
-                            <span style={{ marginRight: '1rem', color: 'var(--text-muted)' }}>Yesterday</span>
-                            <span>Split a generic expense</span>
-                        </div>
-                        <span style={{ color: 'var(--primary-500)', fontWeight: 'bold' }}>+10 pts</span>
-                    </li>
-                    <li className="activity-item" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between' }}>
-                        <div>
-                            <span style={{ marginRight: '1rem', color: 'var(--text-muted)' }}>Last Week</span>
-                            <span>Created a new trip</span>
-                        </div>
-                        <span style={{ color: 'var(--primary-500)', fontWeight: 'bold' }}>+5 pts</span>
-                    </li>
-                </ul>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <h3 style={{ margin: 0 }}>Recent Eco-Actions</h3>
+                    <button
+                        onClick={fetchActivity}
+                        disabled={loading}
+                        style={{
+                            background: 'var(--primary-500)',
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '0.5rem',
+                            color: 'white',
+                            cursor: loading ? 'not-allowed' : 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: '600',
+                            opacity: loading ? 0.6 : 1,
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => !loading && (e.currentTarget.style.background = 'var(--primary-600)')}
+                        onMouseOut={(e) => (e.currentTarget.style.background = 'var(--primary-500)')}
+                    >
+                        {loading ? '⟳ Refreshing...' : '🔄 Refresh'}
+                    </button>
+                </div>
+                {loading && activities.length === 0 ? (
+                    <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>Loading activities...</p>
+                ) : activities.length > 0 ? (
+                    <ul className="activity-list" style={{ listStyle: 'none' }}>
+                        {activities.map((act, idx) => (
+                            <li key={idx} className="activity-item" style={{ padding: '1rem', borderBottom: idx !== activities.length - 1 ? '1px solid var(--glass-border)' : 'none', display: 'flex', justifyContent: 'space-between' }}>
+                                <div>
+                                    <span style={{ marginRight: '1rem', color: 'var(--text-muted)' }}>{formatDate(act.date)}</span>
+                                    <span>{act.title}</span>
+                                </div>
+                                <span style={{ color: act.points >= 0 ? 'var(--primary-500)' : '#EF4444', fontWeight: 'bold' }}>
+                                    {act.points >= 0 ? `+${act.points}` : act.points} pts
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p style={{ color: 'var(--text-muted)', textAlign: 'center' }}>No eco-actions recorded yet. Start exploring!</p>
+                )}
             </div>
         </div>
     );

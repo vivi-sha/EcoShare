@@ -77,8 +77,21 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const refreshUser = async () => {
+        if (!user?.id) return;
+        try {
+            const res = await fetch(`${API_URL}/users/${user.id}`);
+            if (res.ok) {
+                const updatedUser = await res.json();
+                setUser(updatedUser);
+            }
+        } catch (e) {
+            console.error('Failed to refresh user:', e);
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, login, signup, socialLogin, logout }}>
+        <AuthContext.Provider value={{ user, login, signup, socialLogin, logout, refreshUser }}>
             {children}
         </AuthContext.Provider>
     );
