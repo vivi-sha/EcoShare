@@ -1,28 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 const multer = require('multer');
 const path = require('path');
+require('dotenv').config();
 
-const adapter = new FileSync(path.join(__dirname, 'db.json'));
-const db = low(adapter);
-
-// Add db.read() to routes that need fresh data
-const refreshDb = (req, res, next) => {
-    db.read();
-    next();
-};
-
-// Defaults
-db.defaults({ users: [], trips: [], expenses: [], settlements: [], donations: [] }).write();
+const User = require('./models/User');
+const Trip = require('./models/Trip');
+const Expense = require('./models/Expense');
+const Settlement = require('./models/Settlement');
+const Donation = require('./models/Donation');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-// Serve uploaded proofs from the correct absolute path
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Multer Config
@@ -34,54 +27,74 @@ const upload = multer({ storage });
 
 const PORT = 3000;
 
+// Connect to MongoDB
+const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI);
+        console.log('MongoDB Connected');
+    } catch (err) {
+        console.error('MongoDB Connection Error:', err);
+        // Do not exit, allow retry or user to fix env
+    }
+};
+connectDB();
+
 // --- Auth Routes ---
-app.post('/api/auth/signup', (req, res) => {
-    const { name, email, password } = req.body;
-    const existingUser = db.get('users').find({ email }).value();
-    if (existingUser) return res.status(400).json({ error: "User already exists" });
+app.post('/api/auth/signup', async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ error: "User already exists" });
 
-    const user = {
-        id: uuidv4(),
-        name,
-        email,
-        password,
-        ecoPoints: 10, // Initial points
-        donatedPoints: 0
-    };
-    db.get('users').push(user).write();
-    res.json(user);
-});
-
-app.post('/api/auth/login', (req, res) => {
-    const { email, password } = req.body;
-    const user = db.get('users').find({ email, password }).value();
-    if (!user) return res.status(401).json({ error: "Invalid credentials" });
-    res.json(user);
-});
-
-app.post('/api/auth/google', (req, res) => {
-    const { name, email, photoUrl } = req.body;
-
-    if (!email) return res.status(400).json({ error: "Email required" });
-
-    let user = db.get('users').find({ email }).value();
-
-    if (!user) {
-        user = {
+        const user = await User.create({
             id: uuidv4(),
             name,
             email,
-            password: null,
-            photoUrl,
-            ecoPoints: 10, // Initial points (was 100)
-            donatedPoints: 0
-        };
-        db.get('users').push(user).write();
-    } else {
-        db.get('users').find({ email }).assign({ name, photoUrl }).write();
+            password
+        });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
+});
 
-    res.json(user);
+app.post('/api/auth/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email, password });
+        if (!user) return res.status(401).json({ error: "Invalid credentials" });
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/auth/google', async (req, res) => {
+    try {
+        const { name, email, photoUrl } = req.body;
+        if (!email) return res.status(400).json({ error: "Email required" });
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            user = await User.create({
+                id: uuidv4(),
+                name,
+                email,
+                password: null,
+                photoUrl,
+                ecoPoints: 10,
+                donatedPoints: 0
+            });
+        } else {
+            user.name = name;
+            user.photoUrl = photoUrl;
+            await user.save();
+        }
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Upload Proof
@@ -91,464 +104,448 @@ app.post('/api/upload', upload.single('proof'), (req, res) => {
 });
 
 // Get single user by ID
-app.get('/api/users/:id', (req, res) => {
-    db.read();
-    const user = db.get('users').find({ id: req.params.id }).value();
-    if (user) {
-        // Don't send password
-        const { password, ...userWithoutPassword } = user;
-        res.json(userWithoutPassword);
-    } else {
-        res.status(404).json({ error: 'User not found' });
+app.get('/api/users/:id', async (req, res) => {
+    try {
+        const user = await User.findOne({ id: req.params.id });
+        if (user) {
+            const { password, ...userWithoutPassword } = user.toObject();
+            res.json(userWithoutPassword);
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
 // --- Trip Routes ---
-// --- Trip Routes ---
-app.post('/api/trips', (req, res) => {
-    const { name, userId, destination } = req.body;
-    const trip = {
-        id: uuidv4(),
-        name,
-        destination,
-        creatorId: userId,
-        members: [userId], // Store IDs only for consistency
-        shareCode: uuidv4().slice(0, 8),
-        expenses: [],
-        date: new Date().toISOString()
-    };
-    db.get('trips').push(trip).write();
+app.post('/api/trips', async (req, res) => {
+    try {
+        const { name, userId, destination } = req.body;
+        const trip = await Trip.create({
+            id: uuidv4(),
+            name,
+            destination,
+            creatorId: userId,
+            members: [userId],
+            shareCode: uuidv4().slice(0, 8),
+            expenses: [],
+            date: new Date().toISOString()
+        });
 
-    // Award 5 points for starting a trip
-    const user = db.get('users').find({ id: userId }).value();
-    if (user) {
-        db.get('users').find({ id: userId }).assign({ ecoPoints: (user.ecoPoints || 0) + 5 }).write();
+        // Award 5 points
+        await User.findOneAndUpdate({ id: userId }, { $inc: { ecoPoints: 5 } });
+
+        res.json(trip);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    res.json(trip);
 });
 
 // Get trips for a specific user
-app.get('/api/trips/user/:userId', (req, res) => {
-    db.read();
-    const { userId } = req.params;
-    // Find trips where members array contains an object with id == userId
-    // Note: LowDB filter might need adjustment depending on how members are stored.
-    // If members were just IDs: .filter(t => t.members.includes(userId))
-    // But in POST /api/trips we are now storing objects.
-    // Let's stick to storing IDs to be consistent with existing data, or handle both.
+app.get('/api/trips/user/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        // Find trips where members contains userId OR members.id contains userId (legacy support not strictly needed but good to have)
+        // Since we schema defined members as [String], we strictly query strings.
+        // Also check not deletedForUsers.
 
-    // Correction: Existing data (db.json) shows "members": ["id1", "id2"].
-    // So the POST above (which I just pasted) was trying to be too smart. Let's revert to storing just IDs
-    // but when fetching, we might want to populate names if needed, OR the frontend handles it.
-
-    const trips = db.get('trips')
-        .filter(trip => {
-            const isMember = trip.members.some(m => (typeof m === 'string' ? m === userId : m.id === userId));
-            const isDeletedForUser = trip.deletedForUsers && trip.deletedForUsers.includes(userId);
-            return isMember && !isDeletedForUser;
-        })
-        .value();
-    res.json(trips);
+        const trips = await Trip.find({
+            members: userId,
+            deletedForUsers: { $ne: userId }
+        });
+        res.json(trips);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.get('/api/trips/:id', (req, res) => {
-    db.read();
-    const trip = db.get('trips').find({ id: req.params.id }).value();
-    if (trip) {
-        // Hydrate members
-        const hydratedMembers = trip.members.map(mId => {
-            // Handle if member is already object
-            const uid = typeof mId === 'string' ? mId : mId.id;
-            const user = db.get('users').find({ id: uid }).value();
-            return user ? { id: user.id, name: user.name, photoUrl: user.photoUrl } : { id: uid, name: 'Unknown' };
-        });
-        res.json({ ...trip, members: hydratedMembers });
-    } else {
-        res.status(404).json({ error: "Trip not found" });
+app.get('/api/trips/:id', async (req, res) => {
+    try {
+        const trip = await Trip.findOne({ id: req.params.id });
+        if (trip) {
+            // Hydrate members
+            // We need to fetch user details for each member ID
+            const memberIds = trip.members;
+            const users = await User.find({ id: { $in: memberIds } });
+
+            // Map users to a lookup map
+            const userMap = {};
+            users.forEach(u => userMap[u.id] = u);
+
+            const hydratedMembers = memberIds.map(mId => {
+                const user = userMap[mId];
+                return user ? { id: user.id, name: user.name, photoUrl: user.photoUrl } : { id: mId, name: 'Unknown' };
+            });
+
+            const tripObj = trip.toObject();
+            tripObj.members = hydratedMembers;
+            res.json(tripObj);
+        } else {
+            res.status(404).json({ error: "Trip not found" });
+        }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
 // Delete/Leave a trip for a specific user
-app.delete('/api/trips/:id', (req, res) => {
-    const { id } = req.params;
-    const { userId } = req.query;
+app.delete('/api/trips/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.query;
 
-    console.log(`User ${userId} attempting to delete trip from their view: ${id}`);
+        console.log(`User ${userId} attempting to delete trip from their view: ${id}`);
 
-    const trip = db.get('trips').find({ id }).value();
+        const trip = await Trip.findOne({ id });
+        if (!trip) return res.status(404).json({ error: 'Trip not found' });
 
-    if (!trip) {
-        return res.status(404).json({ error: 'Trip not found' });
+        // Initialize deletedForUsers if it doesn't exist
+        if (!trip.deletedForUsers) trip.deletedForUsers = [];
+
+        if (!trip.deletedForUsers.includes(userId)) {
+            trip.deletedForUsers.push(userId);
+        }
+
+        // Check if everyone has deleted it
+        const allMembersDeleted = trip.members.every(m => trip.deletedForUsers.includes(m));
+
+        if (allMembersDeleted) {
+            await Trip.deleteOne({ id });
+            console.log(`Trip ${id} deleted entirely as all members removed it.`);
+        } else {
+            await trip.save();
+            console.log(`Trip ${id} hidden for user ${userId}.`);
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    // Initialize deletedForUsers if it doesn't exist
-    const deletedForUsers = trip.deletedForUsers || [];
-
-    if (!deletedForUsers.includes(userId)) {
-        deletedForUsers.push(userId);
-    }
-
-    // Check if everyone has deleted it
-    // Everyone who is a member must also be in deletedForUsers
-    const allMembersDeleted = trip.members.every(m => {
-        const mid = typeof m === 'string' ? m : m.id;
-        return deletedForUsers.includes(mid);
-    });
-
-    if (allMembersDeleted) {
-        // If everyone deleted it, remove it entirely
-        db.get('trips').remove({ id }).write();
-        console.log(`Trip ${id} deleted entirely as all members removed it.`);
-    } else {
-        // Otherwise just mark it as deleted for this specific user
-        db.get('trips').find({ id }).assign({ deletedForUsers }).write();
-        console.log(`Trip ${id} hidden for user ${userId}.`);
-    }
-
-    res.json({ success: true });
 });
 
 // Leave a trip (officially remove from members)
-app.post('/api/trips/:id/leave', (req, res) => {
-    const { id } = req.params;
-    const { userId } = req.body;
+app.post('/api/trips/:id/leave', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { userId } = req.body;
 
-    console.log(`User ${userId} attempting to leave trip: ${id}`);
+        console.log(`User ${userId} attempting to leave trip: ${id}`);
 
-    const trip = db.get('trips').find({ id }).value();
-    if (!trip) return res.status(404).json({ error: "Trip not found" });
+        const trip = await Trip.findOne({ id });
+        if (!trip) return res.status(404).json({ error: "Trip not found" });
 
-    // Filter out the user from members
-    const updatedMembers = trip.members.filter(m => (typeof m === 'string' ? m !== userId : m.id !== userId));
+        trip.members = trip.members.filter(m => m !== userId);
 
-    if (updatedMembers.length === 0) {
-        db.get('trips').remove({ id }).write();
-        console.log(`Trip ${id} deleted as last member left.`);
-    } else {
-        db.get('trips').find({ id }).assign({ members: updatedMembers }).write();
-        console.log(`User ${userId} left trip ${id}.`);
+        if (trip.members.length === 0) {
+            await Trip.deleteOne({ id });
+            console.log(`Trip ${id} deleted as last member left.`);
+        } else {
+            await trip.save();
+            console.log(`User ${userId} left trip ${id}.`);
+        }
+
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    res.json({ success: true });
 });
 
-app.post('/api/trips/join', (req, res) => {
-    const { userId, shareCode } = req.body;
-    const trip = db.get('trips').find({ shareCode }).value();
+app.post('/api/trips/join', async (req, res) => {
+    try {
+        const { userId, shareCode } = req.body;
+        const trip = await Trip.findOne({ shareCode });
 
-    if (!trip) return res.status(404).json({ error: "Invalid code" });
+        if (!trip) return res.status(404).json({ error: "Invalid code" });
 
-    // Check if already member
-    const isMember = trip.members.some(m => (typeof m === 'string' ? m === userId : m.id === userId));
-    // If user previously deleted this trip from their view, restore it
-    if (trip.deletedForUsers && trip.deletedForUsers.includes(userId)) {
-        const updatedDeletedFor = trip.deletedForUsers.filter(id => id !== userId);
-        db.get('trips').find({ id: trip.id }).assign({ deletedForUsers: updatedDeletedFor }).write();
-    }
+        // Check if already member
+        const isMember = trip.members.includes(userId);
 
-    if (!isMember) {
-        trip.members.push(userId); // Store ID to be consistent
-        db.get('trips').find({ id: trip.id }).assign({ members: trip.members }).write();
-
-        // Award 2 points for joining a trip
-        const user = db.get('users').find({ id: userId }).value();
-        if (user) {
-            db.get('users').find({ id: userId }).assign({ ecoPoints: (user.ecoPoints || 0) + 2 }).write();
+        // If user previously deleted this trip from their view, restore it
+        if (trip.deletedForUsers && trip.deletedForUsers.includes(userId)) {
+            trip.deletedForUsers = trip.deletedForUsers.filter(id => id !== userId);
         }
-    }
 
-    res.json(trip);
+        if (!isMember) {
+            trip.members.push(userId);
+            await User.findOneAndUpdate({ id: userId }, { $inc: { ecoPoints: 2 } });
+        }
+        await trip.save();
+
+        res.json(trip);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // --- Leaderboard & Impact ---
-app.get('/api/leaderboard', (req, res) => {
-    db.read();
-    // Return ALL users sorted by ecoPoints (no take() limit)
-    const leaders = db.get('users')
-        .orderBy(['ecoPoints'], ['desc'])
-        .value()
-        .map(u => ({
-            id: u.id,
-            name: u.name,
-            photoUrl: u.photoUrl,
-            ecoPoints: u.ecoPoints || 0,
-            donatedPoints: u.donatedPoints || 0
-        }));
-    res.json(leaders);
+app.get('/api/leaderboard', async (req, res) => {
+    try {
+        const leaders = await User.find({})
+            .sort({ ecoPoints: -1 })
+            .select('id name photoUrl ecoPoints donatedPoints');
+        res.json(leaders);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-app.post('/api/donate', (req, res) => {
-    const { userId, amount, cause } = req.body;
-    const user = db.get('users').find({ id: userId }).value();
+app.post('/api/donate', async (req, res) => {
+    try {
+        const { userId, amount, cause } = req.body;
+        const user = await User.findOne({ id: userId });
 
-    if (!user || (user.ecoPoints || 0) < amount) {
-        return res.status(400).json({ error: "Insufficient points" });
+        if (!user || user.ecoPoints < amount) {
+            return res.status(400).json({ error: "Insufficient points" });
+        }
+
+        user.ecoPoints -= amount;
+        user.donatedPoints += amount;
+        await user.save();
+
+        await Donation.create({
+            id: uuidv4(),
+            userId,
+            amount,
+            cause,
+            date: new Date().toISOString()
+        });
+
+        res.json({ success: true, newBalance: user.ecoPoints, newDonated: user.donatedPoints });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    // Deduct points
-    const newBalance = (user.ecoPoints || 0) - amount;
-    const newDonated = (user.donatedPoints || 0) + amount;
-
-    db.get('users').find({ id: userId })
-        .assign({ ecoPoints: newBalance, donatedPoints: newDonated })
-        .write();
-
-    // Record donation
-    db.get('donations').push({
-        id: uuidv4(),
-        userId,
-        amount,
-        cause,
-        date: new Date().toISOString()
-    }).write();
-
-    res.json({ success: true, newBalance, newDonated });
 });
 
 // --- Expense Routes ---
-app.post('/api/expenses', (req, res) => {
-    const { tripId, description, amount, payerId, splitDetails, isEcoFriendly, proofImageUrl, verification } = req.body;
-    // splitDetails: { [userId]: splitAmount } or just generic equal split logic handled by frontend sending exact amounts?
-    // Let's assume standard split: simple equal split for now or frontend calculates. 
-    // User asked for "split expense or not and with who all".
-    // Let's store: splitWith: [userIds].
+app.post('/api/expenses', async (req, res) => {
+    try {
+        const { tripId, description, amount, payerId, splitDetails, isEcoFriendly, proofImageUrl, verification } = req.body;
 
-    const expense = {
-        id: uuidv4(),
-        tripId,
-        description,
-        amount: parseFloat(amount),
-        payerId,
-        splitWith: req.body.splitWith, // Array of user IDs involved
-        date: new Date().toISOString(),
-        isEcoFriendly: isEcoFriendly || false,
-        proofImageUrl: proofImageUrl || null,
-        verification: verification || null // { timestamp, location }
-    };
+        const expense = await Expense.create({
+            id: uuidv4(),
+            tripId,
+            description,
+            amount: parseFloat(amount),
+            payerId,
+            splitWith: req.body.splitWith,
+            date: new Date().toISOString(),
+            isEcoFriendly: isEcoFriendly || false,
+            proofImageUrl: proofImageUrl || null,
+            verification: verification || null
+        });
 
-    db.get('expenses').push(expense).write();
-
-    // Eco Points Logic
-    if (isEcoFriendly) {
-        // Points are 50, but verification is now mandatory (enforced by frontend)
-        const points = 50;
-        const user = db.get('users').find({ id: payerId }).value();
-        const currentPoints = user.ecoPoints || 0;
-        db.get('users').find({ id: payerId }).assign({ ecoPoints: currentPoints + points }).write();
-    }
-
-    res.json(expense);
-});
-
-app.get('/api/expenses/:tripId', (req, res) => {
-    const expenses = db.get('expenses').filter({ tripId: req.params.tripId }).value();
-    res.json(expenses);
-});
-
-app.delete('/api/expenses/:id', (req, res) => {
-    db.read(); // Ensure fresh data
-    const { id } = req.params;
-    const expense = db.get('expenses').find({ id }).value();
-
-    if (!expense) return res.status(404).json({ error: "Expense not found" });
-
-    // Deduct points if it was eco-friendly
-    if (expense.isEcoFriendly) {
-        const user = db.get('users').find({ id: expense.payerId }).value();
-        if (user) {
-            const currentPoints = user.ecoPoints || 0;
-            db.get('users').find({ id: expense.payerId })
-                .assign({ ecoPoints: Math.max(0, currentPoints - 50) })
-                .write();
+        // Eco Points Logic
+        if (isEcoFriendly) {
+            await User.findOneAndUpdate({ id: payerId }, { $inc: { ecoPoints: 50 } });
         }
-    }
 
-    db.get('expenses').remove({ id }).write();
-    res.json({ success: true });
+        res.json(expense);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.get('/api/expenses/:tripId', async (req, res) => {
+    try {
+        const expenses = await Expense.find({ tripId: req.params.tripId });
+        res.json(expenses);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.delete('/api/expenses/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const expense = await Expense.findOne({ id });
+
+        if (!expense) return res.status(404).json({ error: "Expense not found" });
+
+        if (expense.isEcoFriendly) {
+            // Deduct points, but don't go below 0
+            const user = await User.findOne({ id: expense.payerId });
+            if (user) {
+                user.ecoPoints = Math.max(0, user.ecoPoints - 50);
+                await user.save();
+            }
+        }
+
+        await Expense.deleteOne({ id });
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // --- Settlement/Split Logic ---
 app.get('/api/trips/:id/summary', async (req, res) => {
-    const tripId = req.params.id;
-    await db.read(); // Ensure fresh data
-    const trip = db.get('trips').find({ id: tripId }).value();
-    const expenses = db.get('expenses').filter(e => e.tripId === tripId).value();
-    const settlements = db.get('settlements').filter(s => s.tripId === tripId).value();
+    try {
+        const tripId = req.params.id;
+        const trip = await Trip.findOne({ id: tripId });
+        if (!trip) return res.status(404).json({ error: 'Trip not found' });
 
-    console.log(`Summary for Trip ${tripId}:`); // Keep debug for now
-    console.log(`Found Trip: ${trip ? trip.name : 'NULL'}`);
-    console.log(`Found Expenses: ${expenses.length}`);
-    console.log(`Found Settlements: ${settlements.length}`);
-    expenses.forEach(e => console.log(` - Exp: ${e.description}, Amount: ${e.amount}, Payer: ${e.payerId}`));
+        const expenses = await Expense.find({ tripId });
+        const settlements = await Settlement.find({ tripId });
 
-    // Calculate specific debts
-    // Map of UserID -> Net Balance (Positive = Owed, Negative = Owes)
-    const balances = {};
-
-    // Initialize 0
-    // Initialize 0
-    // Fix: Handle members being potentially objects or strings
-    trip.members.forEach(m => {
-        const uid = typeof m === 'string' ? m : m.id;
-        balances[uid] = 0;
-    });
-
-    expenses.forEach(exp => {
-        const paidBy = exp.payerId;
-        const amount = exp.amount;
-
-        // Selective Split: Use exp.splitWith if available, otherwise fallback to everyone.
-        let splitIds = exp.splitWith && exp.splitWith.length > 0
-            ? exp.splitWith
-            : trip.members.map(m => (typeof m === 'string' ? m : m.id));
-
-        if (splitIds.length > 0) {
-            const splitAmount = amount / splitIds.length;
-
-            if (balances[paidBy] === undefined) balances[paidBy] = 0;
-            balances[paidBy] += amount;
-            console.log(`   > Payer (${paidBy}) +${amount} -> New Bal: ${balances[paidBy]}`);
-
-            splitIds.forEach(uid => {
-                if (balances[uid] === undefined) balances[uid] = 0;
-                balances[uid] -= splitAmount;
-                console.log(`   > Splitter (${uid}) -${splitAmount} -> New Bal: ${balances[uid]}`);
-            });
-        }
-    });
-
-    // Apply settlements (subtract already paid amounts)
-    settlements.forEach(settlement => {
-        const { fromUserId, toUserId, amount } = settlement;
-        if (balances[fromUserId] !== undefined) {
-            balances[fromUserId] += amount; // Debtor paid, so their balance increases
-        }
-        if (balances[toUserId] !== undefined) {
-            balances[toUserId] -= amount; // Creditor received, so their balance decreases
-        }
-        console.log(`   > Settlement: ${fromUserId} paid ${toUserId} ${amount}`);
-    });
-
-    // Simplify Debts (Who pays whom)
-    // This is a naive implementation
-    const debts = [];
-    const debtors = [];
-    const creditors = [];
-
-    Object.keys(balances).forEach(uid => {
-        const val = balances[uid];
-        if (val < -0.01) debtors.push({ id: uid, amount: -val });
-        if (val > 0.01) creditors.push({ id: uid, amount: val });
-    });
-
-    // Match them
-    let d = 0;
-    let c = 0;
-
-    while (d < debtors.length && c < creditors.length) {
-        const debtor = debtors[d];
-        const creditor = creditors[c];
-
-        const amount = Math.min(debtor.amount, creditor.amount);
-
-        debts.push({
-            from: debtor.id,
-            to: creditor.id,
-            amount: parseFloat(amount.toFixed(2))
+        const balances = {};
+        trip.members.forEach(m => {
+            balances[m] = 0;
         });
 
-        debtor.amount -= amount;
-        creditor.amount -= amount;
+        expenses.forEach(exp => {
+            const paidBy = exp.payerId;
+            const amount = exp.amount;
+            let splitIds = exp.splitWith && exp.splitWith.length > 0
+                ? exp.splitWith
+                : trip.members;
 
-        if (debtor.amount < 0.01) d++;
-        if (creditor.amount < 0.01) c++;
+            if (splitIds.length > 0) {
+                const splitAmount = amount / splitIds.length;
+                if (balances[paidBy] === undefined) balances[paidBy] = 0;
+                balances[paidBy] += amount;
+
+                splitIds.forEach(uid => {
+                    if (balances[uid] === undefined) balances[uid] = 0;
+                    balances[uid] -= splitAmount;
+                });
+            }
+        });
+
+        settlements.forEach(settlement => {
+            const { fromUserId, toUserId, amount } = settlement;
+            if (balances[fromUserId] !== undefined) balances[fromUserId] += amount;
+            if (balances[toUserId] !== undefined) balances[toUserId] -= amount;
+        });
+
+        const debts = [];
+        const debtors = [];
+        const creditors = [];
+
+        Object.keys(balances).forEach(uid => {
+            const val = balances[uid];
+            if (val < -0.01) debtors.push({ id: uid, amount: -val });
+            if (val > 0.01) creditors.push({ id: uid, amount: val });
+        });
+
+        let d = 0;
+        let c = 0;
+
+        while (d < debtors.length && c < creditors.length) {
+            const debtor = debtors[d];
+            const creditor = creditors[c];
+            const amount = Math.min(debtor.amount, creditor.amount);
+
+            debts.push({
+                from: debtor.id,
+                to: creditor.id,
+                amount: parseFloat(amount.toFixed(2))
+            });
+
+            debtor.amount -= amount;
+            creditor.amount -= amount;
+
+            if (debtor.amount < 0.01) d++;
+            if (creditor.amount < 0.01) c++;
+        }
+
+        res.json({ balances, debts, settlements });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    res.json({ balances, debts, settlements });
 });
 
 // --- Settlement Routes ---
-// Record a settlement (when someone pays their debt)
-app.post('/api/settlements', (req, res) => {
-    const { tripId, fromUserId, toUserId, amount } = req.body;
+app.post('/api/settlements', async (req, res) => {
+    try {
+        const { tripId, fromUserId, toUserId, amount } = req.body;
+        if (!tripId || !fromUserId || !toUserId || !amount) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
 
-    if (!tripId || !fromUserId || !toUserId || !amount) {
-        return res.status(400).json({ error: 'Missing required fields' });
+        const settlement = await Settlement.create({
+            id: uuidv4(),
+            tripId,
+            fromUserId,
+            toUserId,
+            amount: parseFloat(amount),
+            date: new Date().toISOString()
+        });
+
+        res.json(settlement);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-
-    const settlement = {
-        id: uuidv4(),
-        tripId,
-        fromUserId,
-        toUserId,
-        amount: parseFloat(amount),
-        date: new Date().toISOString()
-    };
-
-    db.get('settlements').push(settlement).write();
-    res.json(settlement);
 });
 
-// Get settlements for a trip
-app.get('/api/settlements/:tripId', (req, res) => {
-    const settlements = db.get('settlements')
-        .filter({ tripId: req.params.tripId })
-        .value();
-    res.json(settlements);
+app.get('/api/settlements/:tripId', async (req, res) => {
+    try {
+        const settlements = await Settlement.find({ tripId: req.params.tripId });
+        res.json(settlements);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // --- Activity Feed ---
-app.get('/api/user/:userId/activity', (req, res) => {
-    db.read();
-    const { userId } = req.params;
+app.get('/api/user/:userId/activity', async (req, res) => {
+    try {
+        const { userId } = req.params;
 
-    const userTrips = db.get('trips')
-        .filter(t => t.creatorId === userId && (!t.deletedForUsers || !t.deletedForUsers.includes(userId)))
-        .value()
-        .map(t => ({
+        // Trips Created
+        const userTrips = await Trip.find({
+            creatorId: userId,
+            deletedForUsers: { $ne: userId }
+        }).lean();
+        const tripsCreated = userTrips.map(t => ({
             type: 'TRIP_CREATED',
             title: `Started trip to ${t.destination || 'a new destination'}`,
             points: 5,
             date: t.date
         }));
 
-    const joinedTrips = db.get('trips')
-        .filter(t => t.creatorId !== userId && t.members.some(m => (typeof m === 'string' ? m === userId : m.id === userId)) && (!t.deletedForUsers || !t.deletedForUsers.includes(userId)))
-        .value()
-        .map(t => ({
+        // Trips Joined (where created by someone else)
+        const joinedTrips = await Trip.find({
+            creatorId: { $ne: userId },
+            members: userId,
+            deletedForUsers: { $ne: userId }
+        }).lean();
+        const tripsJoined = joinedTrips.map(t => ({
             type: 'TRIP_JOINED',
             title: `Joined trip to ${t.destination || 'a new destination'}`,
             points: 2,
-            date: t.date // Ideally we'd have a join date, but trip date is a fallback
+            date: t.date
         }));
 
-    const ecoExpenses = db.get('expenses')
-        .filter(e => e.payerId === userId && e.isEcoFriendly)
-        .value()
-        .map(e => ({
+        // Eco Expenses
+        const ecoExpenses = await Expense.find({
+            payerId: userId,
+            isEcoFriendly: true
+        }).lean();
+        const expenseActivities = ecoExpenses.map(e => ({
             type: 'ECO_EXPENSE',
             title: `Eco-friendly: ${e.description}`,
             points: 50,
             date: e.date
         }));
 
-    const userDonations = db.get('donations')
-        .filter(d => d.userId === userId)
-        .value()
-        .map(d => ({
+        // Donations
+        const userDonations = await Donation.find({ userId }).lean();
+        const donationActivities = userDonations.map(d => ({
             type: 'DONATION',
             title: `Donated to ${d.cause}`,
             points: -d.amount,
             date: d.date
         }));
 
-    // Combine and sort by date descending
-    const allActivity = [...userTrips, ...joinedTrips, ...ecoExpenses, ...userDonations]
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 10); // Last 10 actions
+        const allActivity = [...tripsCreated, ...tripsJoined, ...expenseActivities, ...donationActivities]
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
+            .slice(0, 10);
 
-    res.json(allActivity);
+        res.json(allActivity);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 app.listen(PORT, () => {

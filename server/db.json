@@ -58,6 +58,48 @@
       "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocKY65CB0U3qxuiVsCRQP4G-vJfj2qkkUr_Cw5Wq6x1d436C6Q=s96-c",
       "ecoPoints": 60,
       "donatedPoints": 0
+    },
+    {
+      "id": "a3568a9b-71d1-400f-a1be-10e661d26d70",
+      "name": "Harsh Bafna",
+      "email": "harshbafna@gmail.in",
+      "password": "12345",
+      "ecoPoints": 17,
+      "donatedPoints": 0
+    },
+    {
+      "id": "515a8e2a-f415-4079-8a94-4085304cee89",
+      "name": "Nikhitha Shivakumar",
+      "email": "nikhiblr@gmail.com",
+      "password": null,
+      "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocK9i8VixYJDhd83go1eHvapO1vR5-juc3x7GyhuYX0Sp30tCQ=s96-c",
+      "ecoPoints": 15,
+      "donatedPoints": 0
+    },
+    {
+      "id": "4a68ef69-088d-4783-bd21-6c22214a4dd3",
+      "name": "pavan",
+      "email": "pavan@gmail.com",
+      "password": "123456",
+      "ecoPoints": 12,
+      "donatedPoints": 0
+    },
+    {
+      "id": "ab37ce91-d7be-4459-b8d0-9a61b7896fed",
+      "name": "panchami",
+      "email": "panch@gmail.com",
+      "password": "123456",
+      "ecoPoints": 12,
+      "donatedPoints": 0
+    },
+    {
+      "id": "a6a95b54-b8e1-4904-a2d3-225c51f7fa50",
+      "name": "Nikhitha S",
+      "email": "nikhithas.cs24@bmsce.ac.in",
+      "password": null,
+      "photoUrl": "https://lh3.googleusercontent.com/a/ACg8ocLVskXpRWuv23hUAXWNBq8CM3TR-biFcK864aiNf1t4392EIA=s96-c",
+      "ecoPoints": 12,
+      "donatedPoints": 0
     }
   ],
   "trips": [
@@ -410,6 +452,34 @@
       "shareCode": "f4c8fa72",
       "expenses": [],
       "date": "2026-01-11T12:34:19.439Z"
+    },
+    {
+      "id": "a23e9eab-1906-479a-9533-57c3ce9c5444",
+      "name": "Friends",
+      "destination": "Coorg",
+      "creatorId": "515a8e2a-f415-4079-8a94-4085304cee89",
+      "members": [
+        "515a8e2a-f415-4079-8a94-4085304cee89",
+        "a3568a9b-71d1-400f-a1be-10e661d26d70",
+        "4a68ef69-088d-4783-bd21-6c22214a4dd3",
+        "ab37ce91-d7be-4459-b8d0-9a61b7896fed",
+        "a6a95b54-b8e1-4904-a2d3-225c51f7fa50"
+      ],
+      "shareCode": "bc734ec7",
+      "expenses": [],
+      "date": "2026-01-11T18:19:19.613Z"
+    },
+    {
+      "id": "dfdac04f-6e9d-412c-a611-baad3e4bdc95",
+      "name": "Bday",
+      "destination": "Goa",
+      "creatorId": "a3568a9b-71d1-400f-a1be-10e661d26d70",
+      "members": [
+        "a3568a9b-71d1-400f-a1be-10e661d26d70"
+      ],
+      "shareCode": "3784f527",
+      "expenses": [],
+      "date": "2026-01-11T20:44:53.602Z"
     }
   ],
   "expenses": [
@@ -589,6 +659,41 @@
           "lng": 77.57411
         }
       }
+    },
+    {
+      "id": "fef133e4-b716-48f4-be3a-97f315ee70e8",
+      "tripId": "a23e9eab-1906-479a-9533-57c3ce9c5444",
+      "description": "dinner",
+      "amount": 1000,
+      "payerId": "a6a95b54-b8e1-4904-a2d3-225c51f7fa50",
+      "splitWith": [
+        "4a68ef69-088d-4783-bd21-6c22214a4dd3",
+        "ab37ce91-d7be-4459-b8d0-9a61b7896fed",
+        "a3568a9b-71d1-400f-a1be-10e661d26d70",
+        "a6a95b54-b8e1-4904-a2d3-225c51f7fa50"
+      ],
+      "date": "2026-01-11T18:31:51.733Z",
+      "isEcoFriendly": false,
+      "proofImageUrl": null,
+      "verification": null
+    },
+    {
+      "id": "bf7c940e-cf71-40e7-906a-99ddde968133",
+      "tripId": "a23e9eab-1906-479a-9533-57c3ce9c5444",
+      "description": "travel",
+      "amount": 1460,
+      "payerId": "a3568a9b-71d1-400f-a1be-10e661d26d70",
+      "splitWith": [
+        "4a68ef69-088d-4783-bd21-6c22214a4dd3",
+        "ab37ce91-d7be-4459-b8d0-9a61b7896fed",
+        "a6a95b54-b8e1-4904-a2d3-225c51f7fa50",
+        "a3568a9b-71d1-400f-a1be-10e661d26d70",
+        "515a8e2a-f415-4079-8a94-4085304cee89"
+      ],
+      "date": "2026-01-11T20:50:25.537Z",
+      "isEcoFriendly": false,
+      "proofImageUrl": null,
+      "verification": null
     }
   ],
   "settlements": [
@@ -615,6 +720,14 @@
       "toUserId": "e76a0c99-8b7e-49f0-9bd7-8b32925b81ee",
       "amount": 50,
       "date": "2026-01-11T12:08:56.653Z"
+    },
+    {
+      "id": "aa63de76-1692-4c28-af87-21753a4c52ae",
+      "tripId": "a23e9eab-1906-479a-9533-57c3ce9c5444",
+      "fromUserId": "a3568a9b-71d1-400f-a1be-10e661d26d70",
+      "toUserId": "a6a95b54-b8e1-4904-a2d3-225c51f7fa50",
+      "amount": 250,
+      "date": "2026-01-11T18:32:16.942Z"
     }
   ],
   "donations": []
