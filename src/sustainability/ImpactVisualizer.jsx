@@ -37,13 +37,13 @@ export default function ImpactVisualizer() {
 
     // Derived from real user points (mocking the conversion for visual effect)
     const points = user?.ecoPoints || 0;
-    const co2Saved = (points * 1.5).toFixed(1); // Mock conversion
-    const trees = Math.floor(points / 50);
+    const co2Saved = (Math.pow(points, 0.8) * 0.5).toFixed(1); // Compound conversion
+    const trees = Math.floor(Math.pow(points, 0.6)); // Compound growth
 
     const stats = [
-        { label: "Eco Points", value: points, icon: "⭐", color: "#F59E0B" },
         { label: "CO2 Saved", value: `${co2Saved}kg`, icon: "☁️", color: "#10B981" },
         { label: "Trees Planted", value: trees, icon: "🌳", color: "#3B82F6" },
+        { label: "Plastic Prevented", value: Math.floor(Math.pow(points, 0.5)), icon: "♻️", color: "#3B82F6" }
     ];
 
     const formatDate = (dateStr) => {

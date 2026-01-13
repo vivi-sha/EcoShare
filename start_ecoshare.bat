@@ -12,6 +12,20 @@ taskkill /F /FI "WINDOWTITLE eq EcoShare Frontend*" >nul 2>&1
 echo Done cleaning up old processes.
 echo.
 
+REM -------------------------------------------------
+REM Ensure dependencies are installed
+IF NOT EXIST "node_modules" (
+    echo Installing frontend dependencies...
+    npm ci
+)
+IF NOT EXIST "server\node_modules" (
+    echo Installing backend dependencies...
+    cd server
+    npm ci
+    cd ..
+)
+REM -------------------------------------------------
+
 REM Wait a moment for ports to be released
 timeout /t 2 /nobreak >nul
 

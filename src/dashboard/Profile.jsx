@@ -19,8 +19,10 @@ export default function Profile() {
                 const trips = await res.json();
 
                 // Calculate basic stats for demo based on points
-                const trees = Math.floor(user.ecoPoints / 100);
-                const plastic = Math.floor(user.ecoPoints / 50);
+                // Compound calculations for impact (non‑linear growth)
+                const trees = Math.floor(Math.pow(user.ecoPoints, 0.6)); // e.g., sqrt‑ish growth
+                const plastic = Math.floor(Math.pow(user.ecoPoints, 0.5)); // slower growth
+
 
                 // Mock sorting by recent
                 const recent = trips.reverse().slice(0, 3).map(t => ({
@@ -31,7 +33,7 @@ export default function Profile() {
                 }));
 
                 setStats({
-                    rank: '#42', // Mock ranking
+                    rank: '#42',
                     recentTrips: recent,
                     impactData: [
                         { name: 'Trees', value: trees > 0 ? trees : 1, fill: '#10B981' },
