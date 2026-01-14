@@ -3,7 +3,7 @@ import './Leaderboard.css';
 
 export default function Leaderboard() {
     const [leaders, setLeaders] = useState([]);
-    const API_URL = 'http://localhost:3000/api';
+    const API_URL = import.meta.env.VITE_API_URL || '/api';
 
     useEffect(() => {
         const fetchLeaders = async () => {

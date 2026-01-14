@@ -21,7 +21,7 @@ export default function ImpactVisualizer() {
         if (!user) return;
         setLoading(true);
         try {
-            const res = await fetch(`http://localhost:3000/api/user/${user.id}/activity`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/user/${user.id}/activity`);
             const data = await res.json();
             setActivities(data);
         } catch (e) {

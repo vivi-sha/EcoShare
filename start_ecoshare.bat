@@ -1,63 +1,74 @@
 @echo off
-echo ========================================
-echo    EcoShare Startup Script
-echo ========================================
+SETLOCAL EnableDelayedExpansion
+
+title EcoShare 2.0 - Dashboard
+color 0B
+
+echo ========================================================
+echo         🌿 EcoShare 2.0 - Smart Travel Manager 🌿
+echo ========================================================
 echo.
 
-REM Kill any existing Node.js and Vite processes
-echo Stopping any existing EcoShare processes...
+REM Set current directory to script location
+pushd "%~dp0"
+
+REM --- CLEANUP ---
+echo [1/4] Cleaning up old sessions...
 taskkill /F /IM node.exe /T >nul 2>&1
-taskkill /F /FI "WINDOWTITLE eq EcoShare Backend*" >nul 2>&1
-taskkill /F /FI "WINDOWTITLE eq EcoShare Frontend*" >nul 2>&1
-echo Done cleaning up old processes.
+timeout /t 1 /nobreak >nul
+echo Done.
 echo.
 
-REM -------------------------------------------------
-REM Ensure dependencies are installed
+REM --- DEPENDENCY CHECK ---
+echo [2/4] Checking for missing dependencies...
 IF NOT EXIST "node_modules" (
-    echo Installing frontend dependencies...
-    npm ci
+    echo [!] Dependencies missing. Installing full-stack packages...
+    call npm install --no-audit --no-fund
+) ELSE (
+    echo Dependencies found.
 )
-IF NOT EXIST "server\node_modules" (
-    echo Installing backend dependencies...
-    cd server
-    npm ci
-    cd ..
-)
-REM -------------------------------------------------
-
-REM Wait a moment for ports to be released
-timeout /t 2 /nobreak >nul
-
-REM Start Backend Server
-echo Starting EcoShare Backend Server...
-start "EcoShare Backend" cmd /k "cd /d %~dp0server && echo Backend Server Starting... && node index.js"
-echo Backend server starting on http://localhost:3000
+echo Done.
 echo.
 
-REM Wait a moment before starting frontend
-timeout /t 3 /nobreak >nul
-
-REM Start Frontend Development Server
-echo Starting EcoShare Frontend...
-start "EcoShare Frontend" cmd /k "cd /d %~dp0 && echo Frontend Server Starting... && npm run dev"
-echo Frontend server starting on http://localhost:5173
+REM --- DB CHECK ---
+echo [3/4] Checking MongoDB status...
+net start | find "MongoDB" >nul
+if %errorlevel% neq 0 (
+    echo [!] WARNING: MongoDB service does not appear to be running locally.
+    echo If the app fails to connect, please start your MongoDB server.
+) else (
+    echo MongoDB service detected.
+)
 echo.
 
-REM Wait for servers to initialize
-echo Waiting for servers to initialize...
-timeout /t 8 /nobreak
+REM --- START SERVICES ---
+echo [4/4] Launching EcoShare Services...
 
-REM Open browser
-echo Opening EcoShare in your browser...
+REM Start Backend Server (on port 3000)
+start "EcoShare API" cmd /c "title EcoShare Backend [Port 3000] && color 0E && echo Starting Backend... && node server/index.js"
+echo Backend starting on http://localhost:3000
+
+REM Start Frontend Development Server (on port 5173)
+start "EcoShare Web" cmd /c "title EcoShare Frontend [Port 5173] && color 0A && echo Starting Frontend... && npm run dev"
+echo Frontend starting on http://localhost:5173
+echo.
+
+REM --- FINALIZATION ---
+echo ========================================================
+echo ✨ System initialization complete!
+echo.
+echo Waiting 5 seconds for services to warm up...
+timeout /t 5 /nobreak >nul
+
+echo Opening EcoShare in your default browser...
 start http://localhost:5173
 
 echo.
-echo ========================================
-echo   EcoShare is now running!
-echo   Backend: http://localhost:3000
-echo   Frontend: http://localhost:5173
-echo ========================================
+echo ========================================================
+echo ✅ SUCCESS: EcoShare is now running.
+echo Keep this window open or press any key to close it.
 echo.
-echo Press any key to exit this window...
+echo TIP: You can see server logs in the new windows that opened.
+echo ========================================================
 pause >nul
+popd

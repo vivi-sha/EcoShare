@@ -100,7 +100,8 @@ app.post('/api/auth/google', async (req, res) => {
 // Upload Proof
 app.post('/api/upload', upload.single('proof'), (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    res.json({ url: `http://localhost:3000/uploads/${req.file.filename}` });
+    const host = req.get('host');
+    res.json({ url: `${req.protocol}://${host}/uploads/${req.file.filename}` });
 });
 
 // Get single user by ID
@@ -548,6 +549,10 @@ app.get('/api/user/:userId/activity', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
