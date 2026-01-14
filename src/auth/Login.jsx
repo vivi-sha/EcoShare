@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 import './Login.css';
 
@@ -10,45 +10,37 @@ export default function Login({ onLoginSuccess }) {
     const { login, signup, socialLogin } = useAuth();
     const [error, setError] = useState('');
 
-    // Google login handled via the <GoogleLogin> component below.
-    const handleGoogleSuccess = async (credentialResponse) => {
-        try {
-            // Decode the JWT token returned by Google to extract user info
-            const base64Url = credentialResponse?.credential?.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            const userInfo = JSON.parse(jsonPayload);
+    const googleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                // Fetch user info using the access token
+                const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+                });
+                const userInfo = await userInfoRes.json();
 
-            const userPayload = {
-                name: userInfo.name,
-                email: userInfo.email,
-                photoUrl: userInfo.picture,
-            };
-            const success = await socialLogin(userPayload);
-            if (success) onLoginSuccess();
-        } catch (error) {
-            console.error('Google login error:', error);
-            setError('Google login failed.');
-        }
-    };
+                const userPayload = {
+                    name: userInfo.name,
+                    email: userInfo.email,
+                    photoUrl: userInfo.picture
+                };
 
-    const handleGoogleError = () => {
-        setError('Google login failed.');
-    };
+                const success = await socialLogin(userPayload);
+                if (success) onLoginSuccess();
+            } catch (error) {
+                console.error('Google login error:', error);
+                setError('Google login failed.');
+            }
+        },
+        onError: () => setError('Google login failed.'),
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         let success;
         if (isSignup) {
-            // Attempt to create a new account
             success = await signup(formData.name, formData.email, formData.password);
-            // If signup succeeded, automatically log the user in
-            if (success) {
-                success = await login(formData.email, formData.password);
-            }
         } else {
             success = await login(formData.email, formData.password);
         }
@@ -118,11 +110,10 @@ export default function Login({ onLoginSuccess }) {
                 <div className="social-login-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div className="divider" style={{ width: '100%' }}><span>OR</span></div>
 
-                    <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={handleGoogleError}
-                        use_fedcm_for_prompt={true}
-                    />
+                    <button className="btn-google" onClick={() => googleLogin()}>
+                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="google-icon" alt="G" />
+                        <span>Continue with Google</span>
+                    </button>
                 </div>
 
                 <div className="login-footer">

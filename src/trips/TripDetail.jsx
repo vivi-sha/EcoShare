@@ -52,7 +52,7 @@ export default function TripDetail({ tripId }) {
     // Proof Viewer State
     const [viewingProof, setViewingProof] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || '/api';
+    const API_URL = 'http://localhost:3000/api';
 
     useEffect(() => {
         fetchTripData();

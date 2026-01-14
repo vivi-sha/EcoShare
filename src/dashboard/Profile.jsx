@@ -15,7 +15,7 @@ export default function Profile() {
         const fetchProfile = async () => {
             try {
                 // Fetch real trips
-                const res = await fetch(`${import.meta.env.VITE_API_URL || '/api'}/trips/user/${user.id}`);
+                const res = await fetch(`http://localhost:3000/api/trips/user/${user.id}`);
                 const trips = await res.json();
 
                 // Calculate basic stats for demo based on points

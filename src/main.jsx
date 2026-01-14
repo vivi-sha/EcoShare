@@ -9,7 +9,7 @@ import ErrorBoundary from './ErrorBoundary.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "632937417440-2s1mci5h9ko9dmqe6pi5d6b9rofl1nj2.apps.googleusercontent.com"}>
+      <GoogleOAuthProvider clientId="632937417440-2s1mci5h9ko9dmqe6pi5d6b9rofl1nj2.apps.googleusercontent.com">
         <AuthProvider>
           <App />
         </AuthProvider>
