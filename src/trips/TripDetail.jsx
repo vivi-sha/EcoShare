@@ -165,9 +165,34 @@ export default function TripDetail({ tripId }) {
 
         const isEco = isManualEco || isAutoEco;
         let proofUrl = null;
+        let finalVerificationData = null;
 
         if (isEco && proofFile) {
             setUploading(true);
+
+            // Ensure we have verification data with at least timestamp
+            if (!verificationData || !verificationData.timestamp) {
+                // Capture fresh verification data if not already captured
+                finalVerificationData = { timestamp: new Date().toISOString(), location: null };
+
+                // Try to get location one more time
+                if ('geolocation' in navigator) {
+                    try {
+                        const position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
+                        });
+                        finalVerificationData.location = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                    } catch (err) {
+                        console.log("Location capture failed, proceeding without GPS:", err);
+                    }
+                }
+            } else {
+                finalVerificationData = verificationData;
+            }
+
             const formData = new FormData();
             formData.append('proof', proofFile);
             try {
@@ -192,13 +217,14 @@ export default function TripDetail({ tripId }) {
                     splitWith: splitWith.length > 0 ? splitWith : trip.members.map(m => m.id),
                     isEcoFriendly: isEco,
                     proofImageUrl: proofUrl,
-                    verification: proofUrl ? verificationData : null
+                    verification: proofUrl ? finalVerificationData : null
                 })
             });
 
             if (res.ok) {
                 setShowExpenseForm(false);
                 setDesc(''); setAmount(''); setIsManualEco(false); setProofFile(null);
+                setVerificationData(null); // Reset verification data
                 fetchTripData(); // Refresh trip data
                 // Refresh user data to update eco-points and trigger activity feed update
                 if (refreshUser) await refreshUser();
@@ -223,42 +249,53 @@ export default function TripDetail({ tripId }) {
         <div className="trip-detail fade-in">
             {/* Proof Viewer Modal */}
             {viewingProof && (
-                <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setViewingProof(null)}>
-                    <div className="modal-content glass-panel" style={{ maxWidth: '500px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#1e293b', border: '1px solid var(--accent)', padding: '0', position: 'relative' }} onClick={e => e.stopPropagation()}>
-                        <button onClick={() => setViewingProof(null)} style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', width: '30px', height: '30px', cursor: 'pointer', zIndex: 10 }}>✕</button>
+                <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(15, 23, 42, 0.9)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }} onClick={() => setViewingProof(null)}>
+                    <div className="modal-content glass-panel" style={{ maxWidth: '480px', width: '100%', maxHeight: '90vh', overflowY: 'auto', background: '#ffffff', border: 'none', padding: '0', position: 'relative', borderRadius: '1.5rem', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)' }} onClick={e => e.stopPropagation()}>
 
-                        <img src={viewingProof.proofImageUrl} alt="Proof" style={{ width: '100%', height: 'auto', display: 'block', borderBottom: '1px solid var(--glass-border)' }} />
+                        <div style={{ position: 'sticky', top: 0, background: 'white', padding: '1rem 1.5rem', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', zIndex: 20 }}>
+                            <h3 style={{ margin: 0, fontSize: '1.1rem', color: '#0f172a', fontWeight: '700' }}>Proof of Expense</h3>
+                            <button onClick={() => setViewingProof(null)} style={{ background: '#f1f5f9', color: '#64748b', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>✕</button>
+                        </div>
+
+                        <div style={{ width: '100%', height: '300px', background: '#f8fafc', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={viewingProof.proofImageUrl} alt="Proof" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        </div>
 
                         <div style={{ padding: '1.5rem' }}>
-                            <h3 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#ffffff', fontWeight: 'bold' }}>
-                                ✅ Verified Proof
-                            </h3>
-                            <p style={{ color: '#e2e8f0', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-                                For: <strong>{viewingProof.description}</strong>
+                            <p style={{ color: '#64748b', fontSize: '0.95rem', fontWeight: '500', marginBottom: '1.25rem' }}>
+                                {viewingProof.description}
                             </p>
 
-                            <div className="meta-grid" style={{ display: 'grid', gap: '1rem', background: 'rgba(255,255,255,0.08)', padding: '1.2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                                {viewingProof.verification?.timestamp && (
-                                    <div className="meta-item">
-                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>🕒 Time Captured</div>
-                                        <div style={{ color: '#ffffff', fontWeight: 'bold', fontSize: '1rem' }}>{new Date(viewingProof.verification.timestamp).toLocaleString()}</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '1rem', border: '1px solid #f1f5f9' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                                        🕒 Time
                                     </div>
-                                )}
+                                    <div style={{ color: '#1e293b', fontWeight: '600', fontSize: '0.9rem' }}>
+                                        {viewingProof.verification?.timestamp ? new Date(viewingProof.verification.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                                    </div>
+                                    <div style={{ color: '#64748b', fontSize: '0.75rem', marginTop: '0.1rem' }}>
+                                        {viewingProof.verification?.timestamp ? new Date(viewingProof.verification.timestamp).toLocaleDateString() : 'N/A'}
+                                    </div>
+                                </div>
 
-                                {viewingProof.verification?.location && (
-                                    <div className="meta-item">
-                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.25rem' }}>📍 Location</div>
+                                <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '1rem', border: '1px solid #f1f5f9' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontWeight: '700', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+                                        📍 Location
+                                    </div>
+                                    {viewingProof.verification?.location ? (
                                         <a
                                             href={`https://www.google.com/maps?q=${viewingProof.verification.location.lat},${viewingProof.verification.location.lng}`}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="btn-link"
-                                            style={{ color: 'var(--primary-500)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontWeight: 'bold', textDecoration: 'none' }}
+                                            style={{ color: '#3b82f6', fontSize: '0.9rem', fontWeight: '600', textDecoration: 'none' }}
                                         >
                                             View on Google Maps ↗
                                         </a>
-                                    </div>
-                                )}
+                                    ) : (
+                                        <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No GPS data</div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -628,7 +665,7 @@ export default function TripDetail({ tripId }) {
                                         <div className="exp-info" style={{ flex: 1 }}>
                                             <h4 style={{ fontSize: '1.1rem', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 {exp.description}
-                                                {exp.verification && <span title="Verified with GPS & Time" style={{ fontSize: '0.7rem', background: 'var(--accent)', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>VERIFIED</span>}
+                                                {(exp.verification || (exp.isEcoFriendly && exp.proofImageUrl)) && <span title="Verified with GPS & Time" style={{ fontSize: '0.7rem', background: 'var(--accent)', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>VERIFIED</span>}
                                             </h4>
                                             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
                                                 Paid by <strong>{payerName}</strong> for everyone
