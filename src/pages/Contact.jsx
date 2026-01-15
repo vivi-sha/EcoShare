@@ -28,19 +28,31 @@ const Contact = () => {
         try {
             // EmailJS configuration
             const serviceId = 'service_ucncb1w'; // ✅ Your Service ID
-            const templateId = 'template_9xc1qyl'; // ✅ Your Template ID
+            const autoReplyTemplateId = 'template_9xc1qyl'; // ✅ Auto-reply template (to user)
+            const adminNotificationTemplateId = 'template_admin_notify'; // ⚠️ CREATE THIS TEMPLATE IN EMAILJS
             const publicKey = 'wLd3Yczj4kXhiZ6_e'; // ✅ Your Public Key
 
-            // Prepare template parameters to match your EmailJS template
-            const templateParams = {
+            // Prepare template parameters for auto-reply to user
+            const autoReplyParams = {
                 name: `${formData.firstName} ${formData.lastName}`,
                 email: formData.email,
                 title: formData.subject,
                 message: formData.message
             };
 
-            // Send email using EmailJS
-            await emailjs.send(serviceId, templateId, templateParams, publicKey);
+            // Prepare template parameters for admin notification
+            const adminNotificationParams = {
+                name: `${formData.firstName} ${formData.lastName}`,
+                email: formData.email,
+                title: formData.subject,
+                message: formData.message
+            };
+
+            // Send auto-reply to user
+            await emailjs.send(serviceId, autoReplyTemplateId, autoReplyParams, publicKey);
+
+            // Send notification to admin (YOU)
+            await emailjs.send(serviceId, adminNotificationTemplateId, adminNotificationParams, publicKey);
 
             setSubmitted(true);
         } catch (err) {
