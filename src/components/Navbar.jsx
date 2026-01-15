@@ -18,13 +18,15 @@ export default function Navbar() {
   return (
     <nav className="glass-panel" style={{
       position: 'sticky',
-      top: '1rem',
-      margin: '0 1.5rem',
+      top: '0.5rem',
+      margin: '0 0.5rem',
       zIndex: 100,
-      padding: '0.75rem 1.5rem',
+      padding: '0.5rem 1rem',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      flexWrap: 'wrap',
+      gap: '0.5rem'
     }}>
       <Link to="/" className="logo" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.25rem', fontWeight: 'bold' }}>
         <span style={{ fontSize: '1.5rem' }}>🌿</span>
@@ -70,6 +72,28 @@ export default function Navbar() {
         .nav-item.active {
           color: var(--primary-500);
           background: rgba(16, 185, 129, 0.1);
+        }
+        @media (max-width: 768px) {
+          .nav-menu {
+            width: 100%;
+            justify-content: center;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+            scrollbar-width: none;
+          }
+          .nav-menu::-webkit-scrollbar {
+            display: none;
+          }
+          .nav-item {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.6rem;
+            white-space: nowrap;
+          }
+          .logo {
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 0.25rem;
+          }
         }
       `}</style>
     </nav>

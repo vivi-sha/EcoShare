@@ -87,3 +87,24 @@
 .rank-3 {
     background: #fffcfc;
 }
+
+@media (max-width: 600px) {
+    .leaderboard-header h1 {
+        font-size: 1.75rem;
+    }
+
+    .leader-table th:nth-child(4),
+    .leader-table td:nth-child(4) {
+        display: none;
+    }
+
+    .leader-table th,
+    .leader-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .rank-col {
+        width: 40px;
+    }
+}

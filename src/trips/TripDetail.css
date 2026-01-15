@@ -249,6 +249,62 @@
     }
 }
 
+@media (max-width: 768px) {
+    .trip-header-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1.5rem;
+        gap: 1.5rem;
+    }
+
+    .trip-header-card h1 {
+        font-size: 1.75rem;
+    }
+
+    .members-list {
+        justify-content: center;
+        margin-left: 10px;
+    }
+
+    .trip-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 0px;
+        scrollbar-width: none;
+    }
+
+    .trip-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .expenses-actions {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+
+    .expense-row {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1.5rem;
+    }
+
+    .exp-icon {
+        margin-bottom: 1rem;
+    }
+
+    .exp-amount {
+        margin-top: 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .balance-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 @keyframes popIn {
     from {
         opacity: 0;
