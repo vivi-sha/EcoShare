@@ -20,8 +20,9 @@ export default function Profile() {
 
                 // Calculate basic stats for demo based on points
                 // Compound calculations for impact (non‑linear growth)
-                const trees = Math.floor(Math.pow(user.ecoPoints, 0.6)); // e.g., sqrt‑ish growth
-                const plastic = Math.floor(Math.pow(user.ecoPoints, 0.5)); // slower growth
+                const trees = Math.floor(Math.pow(user.ecoPoints, 0.6));
+                const plastic = Math.floor(Math.pow(user.ecoPoints, 0.5));
+                const co2 = Number((Math.pow(user.ecoPoints, 0.8) * 0.5).toFixed(1));
 
 
                 // Mock sorting by recent
@@ -38,7 +39,7 @@ export default function Profile() {
                     impactData: [
                         { name: 'Trees', value: trees > 0 ? trees : 1, fill: '#10B981' },
                         { name: 'Plastic', value: plastic > 0 ? plastic : 1, fill: '#3B82F6' },
-                        { name: 'CO2', value: Math.max(5, user.ecoPoints), fill: '#F59E0B' }
+                        { name: 'CO2', value: co2 > 0 ? co2 : 1, fill: '#F59E0B' }
                     ]
                 });
             } catch (e) { console.error(e); }
@@ -122,7 +123,22 @@ export default function Profile() {
                             <span>{user?.ecoPoints || 0} / 500 pts</span>
                         </div>
                         <div className="progress-bar" style={{ height: '10px', background: 'rgba(0,0,0,0.05)', borderRadius: '5px', overflow: 'hidden' }}>
-                            <div className="fill" style={{ width: `${Math.min((user?.ecoPoints || 0) / 500 * 100, 100)}%`, background: 'var(--primary-500)', height: '100%' }}></div>
+                            <div className="fill" style={{
+                                width: `${(() => {
+                                    const points = Number(user?.ecoPoints) || 0;
+                                    const percentage = Math.min((points / 500) * 100, 100);
+                                    console.log('Progress Bar Debug:', {
+                                        rawPoints: user?.ecoPoints,
+                                        convertedPoints: points,
+                                        percentage: percentage,
+                                        calculatedWidth: `${percentage}%`
+                                    });
+                                    return percentage;
+                                })()}%`,
+                                background: 'var(--primary)',
+                                height: '100%',
+                                transition: 'width 0.5s ease-out'
+                            }}></div>
                         </div>
                         <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                             {user?.ecoPoints >= 500 ? "Goal achieved! Badge earned." : `${Math.max(0, 500 - (user?.ecoPoints || 0))} more points to unlock!`}
