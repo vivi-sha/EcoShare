@@ -1,39 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from "jwt-decode";
+import { SignInButton } from '@clerk/clerk-react';
 import './Login.css';
 
 export default function Login({ onLoginSuccess }) {
     const [isSignup, setIsSignup] = useState(false);
     const [formData, setFormData] = useState({ name: '', email: '', password: '' });
-    const { login, signup, socialLogin } = useAuth();
+    const { login, signup, isLoaded } = useAuth();
     const [error, setError] = useState('');
-
-    const googleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            try {
-                // Fetch user info using the access token
-                const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-                });
-                const userInfo = await userInfoRes.json();
-
-                const userPayload = {
-                    name: userInfo.name,
-                    email: userInfo.email,
-                    photoUrl: userInfo.picture
-                };
-
-                const success = await socialLogin(userPayload);
-                if (success) onLoginSuccess();
-            } catch (error) {
-                console.error('Google login error:', error);
-                setError('Google login failed.');
-            }
-        },
-        onError: () => setError('Google login failed.'),
-    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -52,7 +26,15 @@ export default function Login({ onLoginSuccess }) {
         }
     };
 
-    // removed handleGoogleLogin mock function as we use real google login now
+    if (!isLoaded) {
+        return (
+            <div className="login-container">
+                <div className="login-card" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+                    <div className="loader"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="login-container">
@@ -110,10 +92,12 @@ export default function Login({ onLoginSuccess }) {
                 <div className="social-login-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div className="divider" style={{ width: '100%' }}><span>OR</span></div>
 
-                    <button className="btn-google" onClick={() => googleLogin()}>
-                        <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="google-icon" alt="G" />
-                        <span>Continue with Google</span>
-                    </button>
+                    <SignInButton mode="modal" signUpForceRedirectUrl="/dashboard" forceRedirectUrl="/dashboard">
+                        <button className="btn-google">
+                            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="google-icon" alt="G" />
+                            <span>Continue with Clerk (Google)</span>
+                        </button>
+                    </SignInButton>
                 </div>
 
                 <div className="login-footer">

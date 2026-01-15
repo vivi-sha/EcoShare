@@ -1,25 +1,54 @@
 import { useState, useEffect, createContext, useContext } from 'react';
+import { useUser, useClerk } from '@clerk/clerk-react';
 
 const AuthContext = createContext();
 const API_URL = 'http://localhost:3000/api';
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(() => {
-        // Initialize from localStorage
-        const saved = localStorage.getItem('user');
-        return saved ? JSON.parse(saved) : null;
-    });
+    const { user: clerkUser, isLoaded } = useUser();
+    const { signOut } = useClerk();
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Persist to localStorage whenever user changes
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('user');
+        const sync = async () => {
+            if (isLoaded) {
+                if (clerkUser) {
+                    await syncWithBackend(clerkUser);
+                } else {
+                    setUser(null);
+                    setLoading(false);
+                }
+            }
+        };
+        sync();
+    }, [clerkUser, isLoaded]);
+
+    const syncWithBackend = async (clerkUser) => {
+        try {
+            const res = await fetch(`${API_URL}/auth/google`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: clerkUser.fullName || clerkUser.username || clerkUser.primaryEmailAddress.emailAddress.split('@')[0],
+                    email: clerkUser.primaryEmailAddress.emailAddress,
+                    photoUrl: clerkUser.imageUrl,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUser(data);
+            }
+        } catch (e) {
+            console.error('Error syncing with backend:', e);
+        } finally {
+            setLoading(false);
         }
-    }, [user]);
+    };
 
     const login = async (email, password) => {
+        // Note: For a full migration, this should use Clerk's useSignIn
+        // For now, keeping it as is to not break traditional login if still used
         try {
             const res = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
@@ -39,6 +68,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const signup = async (name, email, password) => {
+        // Note: For a full migration, this should use Clerk's useSignUp
         try {
             const res = await fetch(`${API_URL}/auth/signup`, {
                 method: 'POST',
@@ -54,26 +84,10 @@ export const AuthProvider = ({ children }) => {
         return false;
     };
 
-    const socialLogin = async (userInfo) => {
-        try {
-            const res = await fetch(`${API_URL}/auth/google`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userInfo),
-            });
-            const data = await res.json();
-            if (res.ok) {
-                setUser(data);
-                return true;
-            }
-        } catch (e) {
-            console.error(e);
-            return false;
+    const logout = async () => {
+        if (clerkUser) {
+            await signOut();
         }
-        return false;
-    };
-
-    const logout = () => {
         setUser(null);
     };
 
@@ -91,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, signup, socialLogin, logout, refreshUser }}>
+        <AuthContext.Provider value={{ user, login, signup, logout, refreshUser, isLoaded: isLoaded && !loading }}>
             {children}
         </AuthContext.Provider>
     );

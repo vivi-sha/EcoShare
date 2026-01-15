@@ -1,8 +1,18 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Landing.css';
 
 export default function Landing() {
+    const { user, isLoaded } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isLoaded && user) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [user, isLoaded, navigate]);
+
     return (
         <div className="landing">
             <section className="hero">

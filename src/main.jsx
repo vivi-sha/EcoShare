@@ -3,17 +3,23 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
-import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ClerkProvider } from '@clerk/clerk-react'
 import ErrorBoundary from './ErrorBoundary.jsx';
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key")
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      <GoogleOAuthProvider clientId="632937417440-2s1mci5h9ko9dmqe6pi5d6b9rofl1nj2.apps.googleusercontent.com">
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
         <AuthProvider>
           <App />
         </AuthProvider>
-      </GoogleOAuthProvider>
+      </ClerkProvider>
     </ErrorBoundary>
   </StrictMode>,
 )

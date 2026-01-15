@@ -15,7 +15,16 @@ import Contact from './pages/Contact';
 import { useAuth } from './context/AuthContext';
 
 function ProtectedRoute({ children }) {
-  const { user } = useAuth();
+  const { user, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100%' }}>
+        <div className="loader"></div>
+      </div>
+    );
+  }
+
   if (!user) return <Navigate to="/login" replace />;
   return children;
 }
@@ -97,8 +106,16 @@ function App() {
 
 // Wrapper components
 function LoginWrapper() {
-  const { user } = useAuth();
+  const { user, isLoaded } = useAuth();
   const navigate = useNavigate();
+
+  if (!isLoaded) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100%' }}>
+        <div className="loader"></div>
+      </div>
+    );
+  }
 
   if (user) {
     const pending = localStorage.getItem('pendingJoinCode');
