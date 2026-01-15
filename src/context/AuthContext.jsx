@@ -2,7 +2,7 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import { useUser, useClerk } from '@clerk/clerk-react';
 
 const AuthContext = createContext();
-const API_URL = 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 export const AuthProvider = ({ children }) => {
     const { user: clerkUser, isLoaded } = useUser();

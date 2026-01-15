@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
 const connectDB = async () => {

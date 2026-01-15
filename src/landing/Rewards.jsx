@@ -14,7 +14,8 @@ export default function Rewards() {
         if (!confirm(`Are you sure you want to donate ${ngo.cost} points to ${ngo.name}?`)) return;
 
         try {
-            const res = await fetch('http://localhost:3000/api/donate', {
+            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+            const res = await fetch(`${API_URL}/donate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
