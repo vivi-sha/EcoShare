@@ -41,7 +41,7 @@ export default function Login({ onLoginSuccess }) {
             <div className="login-card">
                 <div className="login-header">
                     <span className="logo-icon-lg">🌿</span>
-                    <h2>{isSignup ? "Create Account" : "Welcome Back"}</h2>
+                    <h2>{isSignup ? "Create Account" : "Welcome"}</h2>
                     <p>{isSignup ? "Join the eco-travel revolution" : "Login to access your trips"}</p>
                 </div>
 

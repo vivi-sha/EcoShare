@@ -52,6 +52,10 @@ export default function TripDetail({ tripId }) {
     // Proof Viewer State
     const [viewingProof, setViewingProof] = useState(null);
 
+    // Name Editing State
+    const [isEditingName, setIsEditingName] = useState(false);
+    const [editedName, setEditedName] = useState('');
+
 
     useEffect(() => {
         fetchTripData();
@@ -64,6 +68,7 @@ export default function TripDetail({ tripId }) {
             if (tripRes.ok) {
                 const tripData = await tripRes.json();
                 setTrip(tripData);
+                setEditedName(tripData.name);
                 // Pre-fill payer and splitters when trip loads
                 if (payerId === '') setPayerId(user.id);
                 if (splitWith.length === 0) setSplitWith(tripData.members.map(m => m.id));
@@ -77,6 +82,29 @@ export default function TripDetail({ tripId }) {
 
         } catch (e) { console.error(e); }
         setLoading(false);
+    };
+
+    const handleUpdateName = async () => {
+        if (!editedName.trim() || editedName === trip.name) {
+            setIsEditingName(false);
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/trips/${tripId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: editedName })
+            });
+
+            if (res.ok) {
+                const updatedTrip = await res.json();
+                setTrip(prev => ({ ...prev, name: updatedTrip.name }));
+                setIsEditingName(false);
+            }
+        } catch (e) {
+            console.error('Failed to update trip name:', e);
+        }
     };
 
     const handleMarkAsPaid = async (debt) => {
@@ -243,7 +271,53 @@ export default function TripDetail({ tripId }) {
 
             <div className="trip-header-card glass-panel" style={{ padding: '2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
                 <div style={{ flex: 1 }}>
-                    <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{trip.name}</h1>
+                    {isEditingName ? (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                            <input
+                                type="text"
+                                value={editedName}
+                                onChange={(e) => setEditedName(e.target.value)}
+                                style={{
+                                    fontSize: '2rem',
+                                    fontWeight: 'bold',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid var(--primary)',
+                                    color: 'white',
+                                    padding: '0.2rem 0.5rem',
+                                    borderRadius: '0.5rem',
+                                    width: '100%',
+                                    maxWidth: '400px'
+                                }}
+                                autoFocus
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleUpdateName();
+                                    if (e.key === 'Escape') setIsEditingName(false);
+                                }}
+                            />
+                            <button className="btn btn-primary" onClick={handleUpdateName} style={{ padding: '0.5rem 1rem' }}>Save</button>
+                            <button className="btn btn-secondary" onClick={() => setIsEditingName(false)} style={{ padding: '0.5rem 1rem' }}>Cancel</button>
+                        </div>
+                    ) : (
+                        <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            {trip.name}
+                            <button
+                                onClick={() => setIsEditingName(true)}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontSize: '1.2rem',
+                                    opacity: 0.5,
+                                    transition: 'opacity 0.2s'
+                                }}
+                                onMouseOver={(e) => e.currentTarget.style.opacity = 1}
+                                onMouseOut={(e) => e.currentTarget.style.opacity = 0.5}
+                                title="Edit Trip Name"
+                            >
+                                ✏️
+                            </button>
+                        </h1>
+                    )}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <button
                             className="invite-btn-cute"

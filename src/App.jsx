@@ -12,19 +12,13 @@ import ImpactVisualizer from './sustainability/ImpactVisualizer';
 import JoinTrip from './trips/JoinTrip';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import LoadingScreen from './components/LoadingScreen';
 import { useAuth } from './context/AuthContext';
 
 function ProtectedRoute({ children }) {
   const { user, isLoaded } = useAuth();
 
-  if (!isLoaded) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100%' }}>
-        <div className="loader"></div>
-      </div>
-    );
-  }
-
+  if (!isLoaded) return <LoadingScreen message="Securing your session..." />;
   if (!user) return <Navigate to="/login" replace />;
   return children;
 }
@@ -109,13 +103,7 @@ function LoginWrapper() {
   const { user, isLoaded } = useAuth();
   const navigate = useNavigate();
 
-  if (!isLoaded) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', width: '100%' }}>
-        <div className="loader"></div>
-      </div>
-    );
-  }
+  if (!isLoaded) return <LoadingScreen message="Checking authentication..." />;
 
   if (user) {
     const pending = localStorage.getItem('pendingJoinCode');

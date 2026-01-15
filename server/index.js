@@ -100,7 +100,9 @@ app.post('/api/auth/google', async (req, res) => {
 // Upload Proof
 app.post('/api/upload', upload.single('proof'), (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    res.json({ url: `http://localhost:3000/uploads/${req.file.filename}` });
+    const protocol = req.headers['x-forwarded-proto'] || 'http';
+    const host = req.get('host');
+    res.json({ url: `${protocol}://${host}/uploads/${req.file.filename}` });
 });
 
 // Get single user by ID
@@ -184,6 +186,19 @@ app.get('/api/trips/:id', async (req, res) => {
         } else {
             res.status(404).json({ error: "Trip not found" });
         }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update a trip
+app.patch('/api/trips/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+        const trip = await Trip.findOneAndUpdate({ id }, { name }, { new: true });
+        if (!trip) return res.status(404).json({ error: 'Trip not found' });
+        res.json(trip);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
