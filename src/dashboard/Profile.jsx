@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, API_URL } from '../context/AuthContext';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import MiniLoader from '../components/MiniLoader';
 import './Profile.css';
 
 export default function Profile() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [stats, setStats] = useState({ rank: '-', recentTrips: [], impactData: [] });
+    const [navigating, setNavigating] = useState(null);
 
     useEffect(() => {
         if (!user) return;
@@ -112,7 +114,16 @@ export default function Profile() {
                         </ResponsiveContainer>
                     </div>
                     <p className="impact-summary" style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>You're making a difference!</p>
-                    <Link to="/dashboard/impact" className="btn-text" style={{ display: 'block', marginTop: '1rem', textAlign: 'center', color: 'var(--primary-500)', fontSize: '0.9rem' }}>View Impact Details →</Link>
+                    <button
+                        onClick={() => {
+                            setNavigating('/dashboard/impact');
+                            setTimeout(() => navigate('/dashboard/impact'), 100);
+                        }}
+                        className="btn-text"
+                        style={{ display: 'block', marginTop: '1rem', textAlign: 'center', color: 'var(--primary-500)', fontSize: '0.9rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                    >
+                        {navigating === '/dashboard/impact' && <MiniLoader size="14px" />} View Impact Details →
+                    </button>
                 </div>
 
                 <div className="dashboard-card glass-panel" style={{ padding: '1.5rem', position: 'relative' }}>

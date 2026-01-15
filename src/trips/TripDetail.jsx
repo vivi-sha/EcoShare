@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, API_URL } from '../context/AuthContext';
+import MiniLoader from '../components/MiniLoader';
 import './TripDetail.css';
 
 export default function TripDetail({ tripId }) {
@@ -9,10 +10,12 @@ export default function TripDetail({ tripId }) {
     const [settlement, setSettlement] = useState(null);
     const [settlements, setSettlements] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [navigating, setNavigating] = useState(false);
     const [activeTab, setActiveTab] = useState('expenses'); // expenses | settlement
     const [showExpenseForm, setShowExpenseForm] = useState(false);
     const [showShareMenu, setShowShareMenu] = useState(false);
     const { user, refreshUser } = useAuth();
+    const navigate = useNavigate();
 
     const handleShare = async (platform) => {
         const joinUrl = `${window.location.origin}/join/${trip.shareCode}`;
@@ -302,9 +305,17 @@ export default function TripDetail({ tripId }) {
                 </div>
             )}
 
-            <Link to="/dashboard/history" className="btn btn-secondary" style={{ marginBottom: '1rem' }}>
-                ← Back to Trips
-            </Link>
+            <button
+                onClick={() => {
+                    setNavigating(true);
+                    setTimeout(() => navigate('/dashboard/history'), 100);
+                }}
+                className="btn btn-secondary"
+                style={{ marginBottom: '1rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                disabled={navigating}
+            >
+                {navigating ? <MiniLoader size="16px" /> : '←'} Back to Trips
+            </button>
 
             <div className="trip-header-card glass-panel" style={{ padding: '2rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
                 <div style={{ flex: 1 }}>

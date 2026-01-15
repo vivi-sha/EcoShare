@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import MiniLoader from '../components/MiniLoader';
 import './Landing.css';
 
 export default function Landing() {
     const { user, isLoaded } = useAuth();
     const navigate = useNavigate();
+    const [navigating, setNavigating] = useState(false);
 
     useEffect(() => {
         if (isLoaded && user) {
@@ -25,9 +27,17 @@ export default function Landing() {
                         Plan collaborative trips, split expenses fairly, and track your carbon footprint.
                         Join the community of conscious travelers today.
                     </p>
-                    <Link to="/login" className="btn btn-primary btn-lg">
-                        Start Your Journey
-                    </Link>
+                    <button
+                        onClick={() => {
+                            setNavigating(true);
+                            setTimeout(() => navigate('/login'), 100);
+                        }}
+                        className="btn btn-primary btn-lg"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+                        disabled={navigating}
+                    >
+                        {navigating && <MiniLoader size="18px" />} Start Your Journey
+                    </button>
                 </div>
                 <div className="hero-visual">
                     {/* Placeholder for a cool SVG or Image */}

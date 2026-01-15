@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth, API_URL } from '../context/AuthContext';
+import MiniLoader from '../components/MiniLoader';
 import './Planner.css';
 
 export default function Planner({ onSelectTrip }) {
     const [trips, setTrips] = useState([]);
     const [showNewTripForm, setShowNewTripForm] = useState(false);
     const [showJoinForm, setShowJoinForm] = useState(false);
+    const [navigatingTo, setNavigatingTo] = useState(null);
 
     const [newTripName, setNewTripName] = useState('');
     const [tripDest, setTripDest] = useState('');
@@ -215,9 +217,29 @@ export default function Planner({ onSelectTrip }) {
 
                                 {/* Main Card Link (Using clickable div for better event control) */}
                                 <div
-                                    onClick={() => navigate(`/dashboard/trips/${trip.id}`)}
-                                    style={{ cursor: 'pointer', flex: 1 }}
+                                    onClick={() => {
+                                        setNavigatingTo(trip.id);
+                                        setTimeout(() => navigate(`/dashboard/trips/${trip.id}`), 100);
+                                    }}
+                                    style={{ cursor: 'pointer', flex: 1, position: 'relative' }}
                                 >
+                                    {navigatingTo === trip.id && (
+                                        <div style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            right: 0,
+                                            bottom: 0,
+                                            background: 'rgba(255, 255, 255, 0.8)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            zIndex: 10,
+                                            borderRadius: '0.75rem'
+                                        }}>
+                                            <MiniLoader size="24px" />
+                                        </div>
+                                    )}
                                     <div className="trip-image-placeholder" style={{
                                         height: '140px',
                                         background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',

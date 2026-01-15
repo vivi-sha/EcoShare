@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import MiniLoader from './MiniLoader';
 import './Header.css'; // We'll reuse/overwrite this CSS file content later, or inline styles for now.
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [navigating, setNavigating] = useState(null);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleNavClick = (path) => {
+    setNavigating(path);
+    setTimeout(() => navigate(path), 100);
   };
 
   const navLinkClass = ({ isActive }) =>
@@ -36,10 +43,18 @@ export default function Navbar() {
       <div className="nav-menu" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         {user ? (
           <>
-            <NavLink to="/dashboard" end className={navLinkClass}>Profile</NavLink>
-            <NavLink to="/dashboard/history" className={navLinkClass}>My Trips</NavLink>
-            <NavLink to="/dashboard/impact" className={navLinkClass}>Impact</NavLink>
-            <NavLink to="/dashboard/leaderboard" className={navLinkClass}>Leaderboard</NavLink>
+            <NavLink to="/dashboard" end className={navLinkClass} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              {navigating === '/dashboard' && <MiniLoader size="14px" />} Profile
+            </NavLink>
+            <NavLink to="/dashboard/history" className={navLinkClass} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              {navigating === '/dashboard/history' && <MiniLoader size="14px" />} My Trips
+            </NavLink>
+            <NavLink to="/dashboard/impact" className={navLinkClass} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              {navigating === '/dashboard/impact' && <MiniLoader size="14px" />} Impact
+            </NavLink>
+            <NavLink to="/dashboard/leaderboard" className={navLinkClass} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              {navigating === '/dashboard/leaderboard' && <MiniLoader size="14px" />} Leaderboard
+            </NavLink>
             <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.2)', margin: '0 0.5rem' }}></div>
             <button onClick={handleLogout} className="btn-secondary" style={{ padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem' }}>
               Logout
@@ -50,9 +65,9 @@ export default function Navbar() {
             <Link to="/" className="nav-item">Home</Link>
             <Link to="/about" className="nav-item">About</Link>
             <Link to="/contact" className="nav-item">Contact</Link>
-            <Link to="/login" className="btn btn-primary" style={{ padding: '0.5rem 1.25rem' }}>
-              Get Started
-            </Link>
+            <button onClick={() => handleNavClick('/login')} className="btn btn-primary" style={{ padding: '0.5rem 1.25rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+              {navigating === '/login' && <MiniLoader size="14px" />} Get Started
+            </button>
           </>
         )}
       </div>
