@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, API_URL } from '../context/AuthContext';
 import './TripDetail.css';
 
 export default function TripDetail({ tripId }) {
@@ -52,7 +52,6 @@ export default function TripDetail({ tripId }) {
     // Proof Viewer State
     const [viewingProof, setViewingProof] = useState(null);
 
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
     useEffect(() => {
         fetchTripData();

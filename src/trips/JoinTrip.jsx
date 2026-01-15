@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, API_URL } from '../context/AuthContext';
 
 export default function JoinTrip() {
     const { shareCode } = useParams();
@@ -17,7 +17,6 @@ export default function JoinTrip() {
             }
 
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
                 const res = await fetch(`${API_URL}/trips/join`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

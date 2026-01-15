@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, API_URL } from '../context/AuthContext';
 import './Planner.css';
 
 export default function Planner({ onSelectTrip }) {
@@ -14,7 +14,6 @@ export default function Planner({ onSelectTrip }) {
 
     const { user } = useAuth();
     const navigate = useNavigate();
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
     useEffect(() => {
         if (user) fetchTrips();

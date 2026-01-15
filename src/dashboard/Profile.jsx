@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, API_URL } from '../context/AuthContext';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import './Profile.css';
 
@@ -15,7 +15,6 @@ export default function Profile() {
         const fetchProfile = async () => {
             try {
                 // Fetch real trips
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
                 const res = await fetch(`${API_URL}/trips/user/${user.id}`);
                 const trips = await res.json();
 

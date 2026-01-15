@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useAuth } from '../context/AuthContext';
+import { useAuth, API_URL } from '../context/AuthContext';
 import './ImpactVisualizer.css';
 
 const data = [
@@ -21,7 +21,6 @@ export default function ImpactVisualizer() {
         if (!user) return;
         setLoading(true);
         try {
-            const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
             const res = await fetch(`${API_URL}/user/${user.id}/activity`);
             const data = await res.json();
             setActivities(data);

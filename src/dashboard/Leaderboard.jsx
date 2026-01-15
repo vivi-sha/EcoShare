@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../context/AuthContext';
 import './Leaderboard.css';
 
 export default function Leaderboard() {
     const [leaders, setLeaders] = useState([]);
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
     useEffect(() => {
         const fetchLeaders = async () => {

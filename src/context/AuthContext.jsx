@@ -2,7 +2,17 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import { useUser, useClerk } from '@clerk/clerk-react';
 
 const AuthContext = createContext();
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+
+// Sanitize API URL: Remove trailing slash if present, then ensure it ends with /api
+const getApiUrl = () => {
+    let url = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+    url = url.replace(/\/$/, ''); // Remove trailing slash
+    if (!url.endsWith('/api')) url += '/api';
+    return url;
+};
+export const API_URL = getApiUrl();
+
+console.log('🚀 EcoShare API initialized at:', API_URL);
 
 export const AuthProvider = ({ children }) => {
     const { user: clerkUser, isLoaded } = useUser();
