@@ -663,6 +663,10 @@ export default function TripDetail({ tripId }) {
                         <ul className="expense-list-detail" style={{ listStyle: 'none' }}>
                             {expenses.map(exp => {
                                 const payerName = trip.members.find(m => m.id === exp.payerId)?.name || 'Unknown';
+                                const splitCount = exp.splitWith?.length || 0;
+                                const splitText = splitCount === trip.members.length
+                                    ? 'for everyone'
+                                    : `for ${splitCount} ${splitCount === 1 ? 'person' : 'people'}`;
                                 return (
                                     <li key={exp.id} className="expense-row glass-panel" style={{ display: 'flex', alignItems: 'center', padding: '1rem', marginBottom: '0.75rem' }}>
                                         <div className="exp-icon" style={{ fontSize: '1.5rem', marginRight: '1rem', background: exp.isEcoFriendly ? 'rgba(16, 185, 129, 0.2)' : 'rgba(255,255,255,0.1)', width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '12px', position: 'relative' }}>
@@ -679,7 +683,7 @@ export default function TripDetail({ tripId }) {
                                                 {(exp.verification || (exp.isEcoFriendly && exp.proofImageUrl)) && <span title="Verified with GPS & Time" style={{ fontSize: '0.7rem', background: 'var(--accent)', color: 'white', padding: '1px 6px', borderRadius: '4px' }}>VERIFIED</span>}
                                             </h4>
                                             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                                                Paid by <strong>{payerName}</strong> for everyone
+                                                Paid by <strong>{payerName}</strong> {splitText}
                                                 {exp.proofImageUrl && (
                                                     <button
                                                         onClick={() => setViewingProof(exp)}
