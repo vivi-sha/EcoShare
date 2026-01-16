@@ -12,6 +12,8 @@ import ImpactVisualizer from './sustainability/ImpactVisualizer';
 import JoinTrip from './trips/JoinTrip';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import LoadingScreen from './components/LoadingScreen';
 import { useAuth } from './context/AuthContext';
 
@@ -33,6 +35,8 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/login" element={<LoginWrapper />} />
             <Route path="/join/:shareCode" element={<JoinTrip />} />
 
@@ -83,8 +87,8 @@ function App() {
               <div>
                 <h4 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Legal</h4>
                 <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                  <li><span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', cursor: 'pointer' }}>Privacy Policy</span></li>
-                  <li><span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', cursor: 'pointer' }}>Terms of Service</span></li>
+                  <li><Link to="/privacy-policy" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Privacy Policy</Link></li>
+                  <li><Link to="/terms-of-service" style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Terms of Service</Link></li>
                 </ul>
               </div>
             </div>
